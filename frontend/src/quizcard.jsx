@@ -1,17 +1,6 @@
-function shuffler(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
+import {buildOptions} from './utils/quiz';
 
-export default function buildOptions(answer, pool) {
-    //const options = ; // sort pool to same JLPT level
-    return shuffler(options);
-}
-
-export default function QuizCard({ word, answer, pool }) {
+export default function QuizCard({word, answer}) {
 
     const handleAnswerClick = (selectedOption) => {
         if (selectedOption === answer) {
@@ -21,17 +10,53 @@ export default function QuizCard({ word, answer, pool }) {
         }
     };
 
-    const options = buildOptions(answer, pool);
+    const options = buildOptions(answer);
     return (
-        <div className="quizcard">
-        <h3>{word}</h3>
-        <div className="options">
+        <div className="quiz-card">
+            <h3>{word}</h3>
+            <div className="options">
+                //randomly display either MCQ or type your own answer
+                {Math.random() > 0.5 ? <MCQOptions answer={answer} /> : <TypeOption answer={answer} />}
+            </div>
+        </div>
+    );
+}
+
+export default function TypeOption(answer) { //type your own answer
+    const handleAnswerSubmit = (event) => {
+        event.preventDefault();
+        const userAnswer = event.target.elements.answerInput.value;
+        if (userAnswer === answer) {
+            AnswerCard(true); //answercard opens a new page
+        } else {
+            AnswerCard(false); 
+        }
+    }
+    return (
+        <form onSubmit={handleAnswerSubmit}>
+            <input type="text" name="answerInput" />
+            <button type="submit">Submit</button>
+        </form>
+    );
+}
+
+export default function MCQOptions(answer) { //pick your answer
+    const options = buildOptions(answer);
+    return (
+        <div className="mcq-options">
             {options.map((option, index) => (
             <button key={index} onClick={() => handleAnswerClick(option)}>
                 {option}
             </button>
             ))}
         </div>
+    );
+}
+
+export default function AnswerCard(isCorrect) {
+    return (
+        <div className="answer-card">
+            //layout gonna look like the dictionary entry
         </div>
     );
 }
