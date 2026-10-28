@@ -31,7 +31,7 @@ def first_text(node, key):
         return concat_child(n)
     return None
 
-def parse(array):
+def parse_glossary(array):
     result = []
 
     for a in array:
@@ -62,7 +62,7 @@ def parse(array):
             result.append({"attribution": attribution})
     return result
 
-with open("term_bank_18.json", "r", encoding="utf-8") as file:
+with open("term_bank_18.json", "r", encoding="utf-8") as file: #update for all
    data = json.load(file)
 
 parsed = []
@@ -77,7 +77,7 @@ for entry in data:
    sequence = entry[6] if len(entry) > 6 else None
 
 
-   clean_defs = parse(glossary)
+   clean_defs = parse_glossary(glossary)
 
    parsed.append(
       {
