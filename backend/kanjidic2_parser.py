@@ -1,16 +1,35 @@
 import xml.etree.ElementTree as ET  
 
-xml = "kanjidic2.xml"
-   
-entries = {}  
-for event, elem in ET.iterparse(xml):
-    if elem.tag == 'character':
-         literal = elem.findtext("literal")
-         entries[literal] = {
-            "meaning": [x.text for x in elem.findall("reading_meaning/rmgroup/meaning") if x.get("m_lang") is None], #get the english meaning only
-            "jlpt": elem.findtext("misc/jlpt"),
-            "onyomi": [x.text for x in elem.findall("reading_meaning/rmgroup/reading[@r_type='ja_on']")],
-            "kunyomi": [x.text for x in elem.findall("reading_meaning/rmgroup/reading[@r_type='ja_kun']")],
-            "nanori": [x.text for x in elem.findall("reading_meaning/nanori")]
-         }
-         elem.clear()
+def _to_int(value):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+    
+def parse_kanji(xml):
+    for event, elem in ET.iterparse(xml):
+        if elem.tag == 'character':
+            k = elem.findtext("literal"),
+
+            kanji_row = (
+                k,
+                _to_int(elem.findtext("misc/jlpt")),
+                _to_int(elem.findtext("misc/stroke_count")),
+                _to_int(elem.findtext("misc/freq"))
+            )
+
+            readings = []
+            for r_type, label in [("ja_on", "on"), ("ja_kun", "kun")]:
+                for r in elem.findall(f"reading_meaning/rmgroup/reading[@r_type='{r_type}']"):
+                    readings.append((k, r.text, label))
+            for x in elem.findall("reading_meaning/nanori"):
+                readings.append((k, x.text, "nanori"))
+
+            meanings = [
+                (k, x.text)
+                for x in elem.findall("reading_meaning/rmgroup/meaning")
+                if x.get("m_lang") is None #english only
+            ]
+
+            yield kanji_row, readings, meanings
+            elem.clear()
