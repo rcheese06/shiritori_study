@@ -12,13 +12,13 @@ def _plain(text):
 def parse_kanji(xml):
     for event, elem in ET.iterparse(xml):
         if elem.tag == 'character':
-            k = elem.findtext("literal"),
+            k = elem.findtext("literal")
 
             kanji_row = (
                 k,
                 _to_int(elem.findtext("misc/jlpt")),
                 _to_int(elem.findtext("misc/stroke_count")),
-                _to_int(elem.findtext("misc/freq"))
+                _to_int(elem.findtext("misc/freq")),
             )
 
             readings = []

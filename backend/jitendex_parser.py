@@ -62,9 +62,10 @@ def parse_glossary(array):
             result.append({"attribution": attribution})
     return result
 
-with open("term_bank_18.json", "r", encoding="utf-8") as file: #update for all
-   data = json.load(file)
+#with open("term_bank_18.json", "r", encoding="utf-8") as file: #update for all
+   #data = json.load(file)
 
+'''
 parsed = []
 
 for entry in data:
@@ -89,6 +90,4 @@ for entry in data:
          "sequence_id": sequence
          }
       )
-
-#print(data[0][5])
-print(parsed[55])
+'''
