@@ -5,6 +5,9 @@ def _to_int(value):
         return int(value)
     except (TypeError, ValueError):
         return None
+
+def _plain(text):
+    return text.replace(".", "").replace("-", "")
     
 def parse_kanji(xml):
     for event, elem in ET.iterparse(xml):
@@ -21,9 +24,9 @@ def parse_kanji(xml):
             readings = []
             for r_type, label in [("ja_on", "on"), ("ja_kun", "kun")]:
                 for r in elem.findall(f"reading_meaning/rmgroup/reading[@r_type='{r_type}']"):
-                    readings.append((k, r.text, label))
+                    readings.append((k, r.text, _plain(r.text), label))
             for x in elem.findall("reading_meaning/nanori"):
-                readings.append((k, x.text, "nanori"))
+                readings.append((k, x.text, _plain(x.text), "nanori"))
 
             meanings = [
                 (k, x.text)
