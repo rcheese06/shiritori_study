@@ -67,6 +67,21 @@ def build_words(con):
     con.execute("CREATE INDEX jit_index_reading ON entries(reading)")
     con.commit()
 
+    #FTS5 for english meaning search
+    con.execute("""
+        CREATE VIRTUAL TABLE glossary_fts USING fts5(
+            text,
+            tokenize = 'porter unicode61'
+        )
+    """)
+    fts_rows = []
+    for id, definitions in con.execute("SELECT id, definitions FROM entries").fetchall():
+        text = " ".join(d["glossary"] for d in json.loads(definitions) if "glossary" in d)
+        if text:
+            fts_rows.append((id, text))
+    con.executemany("INSERT INTO glossary_fts (rowid, text) VALUES (?, ?)", fts_rows)   
+    con.commit()
+
 def build_kanji(con):
     #normalised 3 tables for kanji
     con.executescript("""
