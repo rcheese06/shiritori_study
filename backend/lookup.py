@@ -1,6 +1,7 @@
 #TO-DO: run build_db.py to create dictionary.db
 
 import json
+import re
 import sqlite3
 from pathlib import Path
 
@@ -12,22 +13,55 @@ if not DB_PATH.exists():
 con = sqlite3.connect(DB_PATH)
 con.row_factory = sqlite3.Row
 
+_JP = re.compile(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9faf\uf900-\ufaff]")
+
+#clean user inputs
+def _fts_query(text, prefix=True):
+    tokens = [t.replace('"', "") for t in text.split()]
+    tokens = [t for t in tokens if t]
+    if not tokens:
+        return None
+    suffix = "*" if prefix else ""
+    return " ".join(f'"{t}"{suffix}' for t in tokens)
+
+#dict structure for jitendex words
+def _dict_entries(row):
+    return {
+        "expression": row["expression"],
+        "reading": row["reading"],
+        "tags": row["tags"].split() if row["tags"] else [],
+        "score": row["score"],
+        "definitions": json.loads(row["definitions"]),
+        "sequence_id": row["sequence_id"]
+            }
+
 #lookup word from jitendex
-def word_info(word): #no en->jp yet
+def word_info(word): 
     rows = con.execute("""
         SELECT * FROM entries WHERE expression = ? OR reading = ?
     """, (word, word)).fetchall()
-    return [
-        {
-            "expression": row["expression"],
-            "reading": row["reading"],
-            "tags": row["tags"].split() if row["tags"] else [],
-            "score": row["score"],
-            "definitions": json.loads(row["definitions"]),
-            "sequence_id": row["sequence_id"]
-        }
-        for row in rows
-    ]
+    return [_dict_entries(row) for row in rows]
+
+#lookup by english meaning
+def word_by_meaning(meaning):
+    query = _fts_query(meaning)
+    if not query:
+        return []
+    rows = con.execute("""
+        SELECT e.* FROM glossary_fts f
+        JOIN entries e ON e.id = f.rowid
+        WHERE glossary_fts MATCH ?
+        ORDER BY f.rank, e.score DESC
+        LIMIT ?
+    """, (query, 50)).fetchall()
+    return [_dict_entries(row) for row in rows]
+
+def search(text):
+    text = text.strip()
+    if _JP.search(text):
+        return word_info(text)
+    return word_by_meaning(text)
+
 
 #lookup kanji from kanjidic2
 def _is_kanji(char):
