@@ -13,13 +13,12 @@ JIT_PATH = DATA_DIR / "jitendex-yomitan.zip"
 KAN_PATH = DATA_DIR / "kanjidic2.xml"
 DB_PATH = BASE_DIR / "dictionary.db"
 
-def index():
-    def get_index(name):
-        match = re.search(r"term_bank_(\d+)\.json", name)
-        return int(match.group(1)) if match else 0
-    return get_index
+def index(name):
+    return int(re.search(r"(\d+)", Path(name).stem).group(1))
 
 def build_db():
+    if DB_PATH.exists(): #rebuild if already exists
+        DB_PATH.unlink() 
     con = sqlite3.connect(DB_PATH)
     con.execute("PRAGMA foreign_keys = ON")
 
@@ -47,12 +46,12 @@ def build_words(con):
 
         rows = [
             (
-                entry["expression"],
-                entry["reading"],
-                " ".join(entry["tags"]) if entry["tags"] else None,
-                entry["score"],
-                json.dumps(entry["definitions"], ensure_ascii=False), #set up FTS5/Tatoeba for english meaning search
-                entry["sequence_id"] if entry["sequence_id"] else None
+                entry[0],
+                entry[1],
+                " ".join(entry[2]) if entry[2] else None,
+                entry[4],
+                json.dumps(entry[5], ensure_ascii=False), #set up FTS5/Tatoeba for english meaning search
+                entry[6] if entry[6] else None
             )
             for entry in data
         ]
@@ -64,8 +63,8 @@ def build_words(con):
     con.commit()
 
     #indexes
-    con.execute("CREATE INDEX index_expression ON entries(expression)")
-    con.execute("CREATE INDEX index_reading ON entries(reading)")
+    con.execute("CREATE INDEX jit_index_expression ON entries(expression)")
+    con.execute("CREATE INDEX jit_index_reading ON entries(reading)")
     con.commit()
 
 def build_kanji(con):
@@ -75,8 +74,8 @@ def build_kanji(con):
             literal TEXT PRIMARY KEY,
             jlpt INTEGER,
             stroke INTEGER,
-            freq INTEGER,
-        )
+            freq INTEGER
+        );
 
         CREATE TABLE kanji_readings (
             id INTEGER PRIMARY KEY,
@@ -85,18 +84,18 @@ def build_kanji(con):
             plaintext_reading TEXT,
             type TEXT NOT NULL,
             FOREIGN KEY (literal) REFERENCES kanji(literal)
-        )
+        );
 
         CREATE TABLE kanji_meanings (
             id INTEGER PRIMARY KEY,
             literal TEXT NOT NULL,
             meaning TEXT NOT NULL,
             FOREIGN KEY (literal) REFERENCES kanji(literal)
-        )
+        );
     """)
 
     for kanji_row, readings, meanings in kparser.parse_kanji(KAN_PATH):
-        con.executemany("""
+        con.execute("""
             INSERT INTO kanji (literal, jlpt, stroke, freq)
             VALUES (?, ?, ?, ?)
         """, 
@@ -104,7 +103,7 @@ def build_kanji(con):
         )
         con.executemany("""
             INSERT INTO kanji_readings (literal, reading, plaintext_reading, type)
-            VALUES (?, ?, ?)
+            VALUES (?, ?, ?, ?)
         """,
         readings
         )
@@ -117,10 +116,10 @@ def build_kanji(con):
     con.commit()
 
     #indexes
-    con.execute("CREATE INDEX index_rd_literal ON kanji_readings(literal)")
-    con.execute("CREATE INDEX index_reading ON kanji_readings(reading)")
-    con.execute("CREATE INDEX index_mn_literal ON kanji_meanings(literal)")
-    con.execute("CREATE INDEX index_meaning ON kanji_meanings(meaning)")
+    con.execute("CREATE INDEX kan_index_rd_literal ON kanji_readings(literal)")
+    con.execute("CREATE INDEX kan_index_rd_reading ON kanji_readings(reading)")
+    con.execute("CREATE INDEX kan_index_mn_literal ON kanji_meanings(literal)")
+    con.execute("CREATE INDEX kan_index_mn_meaning ON kanji_meanings(meaning)")
     con.commit()
 
 if __name__ == "__main__":
