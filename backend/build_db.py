@@ -13,6 +13,19 @@ JIT_PATH = DATA_DIR / "jitendex-yomitan.zip"
 KAN_PATH = DATA_DIR / "kanjidic2.xml"
 DB_PATH = BASE_DIR / "dictionary.db"
 
+def index():
+    def get_index(name):
+        match = re.search(r"term_bank_(\d+)\.json", name)
+        return int(match.group(1)) if match else 0
+    return get_index
+
+def build_db():
+    con = sqlite3.connect(DB_PATH)
+    con.execute("PRAGMA foreign_keys = ON")
+
+    build_words(con)
+    build_kanji(con)
+
 def build_words(con):
     con.execute("""
         CREATE TABLE entries (
@@ -27,8 +40,10 @@ def build_words(con):
     """)
 
     with zipfile.ZipFile(JIT_PATH, "r") as zf:
-        with zf.open("jitendex-yomitan.json", "r") as f:
-            data = json.load(f)
+        names = [n for n in zf.namelist() if re.fullmatch(r"(?:.*/)?term_bank_\d+\.json", n)]
+        for name in sorted(names, key=index):
+            with zf.open(name) as file:
+                data = json.load(file)
 
         rows = [
             (
@@ -106,3 +121,6 @@ def build_kanji(con):
     con.execute("CREATE INDEX index_mn_literal ON kanji_meanings(literal)")
     con.execute("CREATE INDEX index_meaning ON kanji_meanings(meaning)")
     con.commit()
+
+if __name__ == "__main__":
+    build_db()
