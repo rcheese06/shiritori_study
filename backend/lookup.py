@@ -13,7 +13,7 @@ con = sqlite3.connect(DB_PATH)
 con.row_factory = sqlite3.Row
 
 #lookup word from jitendex
-def word_info(word):
+def word_info(word): #no en->jp yet
     rows = con.execute("""
         SELECT * FROM entries WHERE expression = ? OR reading = ?
     """, (word, word)).fetchall()
@@ -75,6 +75,12 @@ def kanji_by_reading(reading):
     return [dict(r) for r in con.execute(sql, params)]
 
 #lookup by meanings
-def kanji_by_meaning(meaning):
-    #TO-DO
-    return meow2
+def kanji_by_meaning(meaning): #switch to fts5 maybe? faster
+    rows = con.execute("""
+        SELECT k.* from kanji k
+        JOIN kanji_meanings m ON k.literal = m.literal
+        WHERE m.meaning LIKE ? 
+        GROUP BY k.literal
+        ORDER BY k.freq IS NULL, k.freq
+    """, (f"%{meaning}%",)).fetchall()
+    return kanji_info("".join([r["literal"] for r in rows]))
