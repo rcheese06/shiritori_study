@@ -82,6 +82,7 @@ def build_kanji(con):
             id INTEGER PRIMARY KEY,
             literal TEXT NOT NULL,
             reading TEXT NOT NULL,
+            plaintext_reading TEXT,
             type TEXT NOT NULL,
             FOREIGN KEY (literal) REFERENCES kanji(literal)
         )
@@ -102,7 +103,7 @@ def build_kanji(con):
         kanji_row
         )
         con.executemany("""
-            INSERT INTO kanji_readings (literal, reading, type)
+            INSERT INTO kanji_readings (literal, reading, plaintext_reading, type)
             VALUES (?, ?, ?)
         """,
         readings
