@@ -2,14 +2,6 @@ import {buildOptions} from './utils/quiz';
 
 export default function QuizCard({word, answer}) {
 
-    const handleAnswerClick = (selectedOption) => {
-        if (selectedOption === answer) {
-            AnswerCard(true); //answercard opens a new page
-        } else {
-            AnswerCard(false); 
-        }
-    };
-
     const options = buildOptions(answer);
     return (
         <div className="quiz-card">

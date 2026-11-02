@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import './App.css'
 
+import quizdecks from './quizdecks';
+import quizdecksettings from './quizdecksettings';
+
 function App() {
   const [count, setCount] = useState(0)
 
