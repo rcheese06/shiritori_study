@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function QuizDecksSettings({ deck }) {
+export default function QuizDecksSettings({ deck, onBackToHome }) {
     const [deckName, setDeckName] = useState(deck.name);
     const [deckSize, setDeckSize] = useState(deck.size);
     const [options, setOptions] = useState({
@@ -15,9 +15,20 @@ export default function QuizDecksSettings({ deck }) {
         setOptions(prev => ({ ...prev, [name]: checked }));
     }
 
-    /*useEffect(() => {
-        post('/analytics/event', { eventName: 'visit_form' });
-    }, []);*/ //??
+    //delete deck from database
+    function onDeleteDeck(deck) {  
+        fetch(`/api/deck/${deck.id}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.ok) {
+                // Redirect to the decks page after successful deletion
+                window.location.href = '/decks';
+            } else {
+                console.error('Failed to delete deck');
+            }
+        });
+    }
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -75,7 +86,7 @@ export default function QuizDecksSettings({ deck }) {
             </div>
             
             <div className="deck-settings-buttons">
-                <button type="reset" onClick={() => onBackToHome()}>Back to Home</button>
+                <button type="button" onClick={onBackToHome}>Back to Home</button>
                 <div className="button-pair">
                     <button type="submit">Save Changes</button>
                     <button type="button" onClick={() => onDeleteDeck(deck)}>Delete Deck</button>
