@@ -1,35 +1,61 @@
-import { useState } from 'react'
-import './App.css'
-
-import quizdecks from './quizdecks';
-import quizdecksettings from './quizdecksettings';
+import { useEffect, useState } from 'react';
+import './App.css';
+import QuizDecks from './quizdecks.jsx';
+import QuizDecksSettings from './quizdecksettings.jsx';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [decks, setDecks] = useState([]);
+  const [selectedDeck, setSelectedDeck] = useState(null);
+  const [page, setPage] = useState('decks');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadDecks() {
+      try {
+        const response = await fetch('/api/deck', { signal: controller.signal });
+        if (!response.ok) {
+          throw new Error(`Failed to load decks (${response.status})`);
+        }
+
+        const data = await response.json();
+        if (!Array.isArray(data)) {
+          throw new Error('The deck response was not a list');
+        }
+
+        setDecks(data);
+      } catch (fetchError) {
+        if (!controller.signal.aborted) {
+          setError(fetchError.message);
+        }
+      }
+    }
+
+    loadDecks();
+    return () => controller.abort();
+  }, []);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            hi
-          </p>
-        </div>
-      </section>
-
-      <section id="next-steps">
-        <div id="social">
-          
-        </div>
-      </section>
-
-      <section id="spacer"></section>
-    </>
-  )
+    <main>
+      {error && <p role="alert">{error}</p>}
+      {page === 'decks' && (
+        <QuizDecks
+          decks={decks}
+          onSettings={(deck) => {
+            setSelectedDeck(deck);
+            setPage('settings');
+          }}
+        />
+      )}
+      {page === 'settings' && selectedDeck && (
+        <QuizDecksSettings
+          deck={selectedDeck}
+          onBackToHome={() => setPage('decks')}
+        />
+      )}
+    </main>
+  );
 }
 
-export default App
+export default App;
