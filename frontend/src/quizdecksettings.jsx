@@ -70,10 +70,7 @@ export default function QuizDecksSettings({ deck }) {
                 
                 //to-do
                 <label>
-                    Type the answer: <input type="checkbox" name="typeTheAnswer" defaultChecked={true} />
-                </label>
-                <label>
-                    MCQ answers: <input type="checkbox" name="mcqAnswers" defaultChecked={true} />
+                    Type the answer when possible: <input type="checkbox" name="typeTheAnswer" defaultChecked={true} />
                 </label>
             </div>
             
