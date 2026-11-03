@@ -33,7 +33,10 @@ def build_words(con):
             reading TEXT,
             tags TEXT,
             score INTEGER,
-            definitions TEXT,
+            part_of_speech_info TEXT,
+            definition TEXT,
+            example_sentence_a TEXT,
+            example_sentence_b TEXT,
             sequence_id TEXT
         )
     """)
@@ -44,21 +47,24 @@ def build_words(con):
             with zf.open(name) as file:
                 data = json.load(file)
 
-        rows = [
-            (
+        rows = []
+        for entry in data:
+            definitions = jparser.parse_glossary(entry[5]) if entry[5] else {}
+            rows.append((
                 entry[0],
                 entry[1],
                 " ".join(entry[2]) if entry[2] else None,
                 entry[4],
-                json.dumps(entry[5], ensure_ascii=False), #set up FTS5/Tatoeba for english meaning search
-                entry[6] if entry[6] else None
-            )
-            for entry in data
-        ]
+                definitions.get("part-of-speech-info", ""),
+                definitions.get("glossary", ""),
+                definitions.get("example-sentence-a", ""),
+                definitions.get("example-sentence-b", ""),
+                entry[6] if entry[6] else None,
+            ))
 
     con.executemany("""
-        INSERT INTO entries (expression, reading, tags, score, definitions, sequence_id)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO entries (expression, reading, tags, score, part_of_speech_info, definition, example_sentence_a, example_sentence_b, sequence_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, rows)
     con.commit()
 
@@ -75,11 +81,10 @@ def build_words(con):
         )
     """)
     fts_rows = []
-    for id, definitions in con.execute("SELECT id, definitions FROM entries").fetchall():
-        text = " ".join(d["glossary"] for d in json.loads(definitions) if "glossary" in d)
-        if text:
-            fts_rows.append((id, text))
-    con.executemany("INSERT INTO glossary_fts (rowid, text) VALUES (?, ?)", fts_rows)   
+    for id, definition in con.execute("SELECT id, definition FROM entries").fetchall():
+        if definition and definition.strip():
+            fts_rows.append((id, definition))
+    con.executemany("INSERT INTO glossary_fts (rowid, text) VALUES (?, ?)", fts_rows)
     con.commit()
 
 def build_kanji(con):

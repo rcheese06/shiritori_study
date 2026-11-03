@@ -1,6 +1,5 @@
 #TO-DO: run build_db.py to create dictionary.db
 
-import json
 import re
 import sqlite3
 from pathlib import Path
@@ -31,7 +30,10 @@ def _dict_entries(row):
         "reading": row["reading"],
         "tags": row["tags"].split() if row["tags"] else [],
         "score": row["score"],
-        "definitions": json.loads(row["definitions"]),
+        "part-of-speech-info": row["part_of_speech_info"].split(",") if row["part_of_speech_info"] else "",
+        "definitions": row["definition"].split(",") if row["definition"] else [],
+        "example-sentence-a": row["example_sentence_a"] if row["example_sentence_a"] else "",
+        "example-sentence-b": row["example_sentence_b"] if row["example_sentence_b"] else "",
         "sequence_id": row["sequence_id"]
             }
 
