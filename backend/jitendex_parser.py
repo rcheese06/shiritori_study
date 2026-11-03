@@ -32,7 +32,7 @@ def first_text(node, key):
     return None
 
 def parse_glossary(array):
-    result = []
+    result = {}
 
     for a in array:
         for group in find(a, "sense-group"):
@@ -40,54 +40,62 @@ def parse_glossary(array):
  
             for sense in find(group, "sense"):
                 if pos:
-                    result.append({"part-of-speech-info": ", ".join(pos)})
+                    #result.append({"part-of-speech-info": ", ".join(pos)})
+                    result["part-of-speech-info"] = ",".join(pos)
  
                 glosses = [concat_child(li)
                            for g in find(sense, "glossary")
                            for li in walk(g.get("content"))
                            if li.get("tag") == "li"]
                 if glosses:
-                    result.append({"glossary": ", ".join(glosses)})
- 
+                    #result.append({"glossary": ", ".join(glosses)})
+                    result["glossary"] = ",".join(glosses)
+
                 for ex in find(sense, "example-sentence"):
                     jp = first_text(ex, "example-sentence-a")
                     en = first_text(ex, "example-sentence-b")
                     if jp is not None:
-                        result.append({"example-sentence-a": jp})
+                        #result.append({"example-sentence-a": jp})
+                        result["example-sentence-a"] = jp
                     if en is not None:
-                        result.append({"example-sentence-b": en})
+                        #result.append({"example-sentence-b": en})
+                        result["example-sentence-b"] = en
  
         attribution = first_text(a, "attribution")
         if attribution is not None:
-            result.append({"attribution": attribution})
+            #result.append({"attribution": attribution})
+            result["attribution"] = attribution
     return result
 
-#with open("term_bank_18.json", "r", encoding="utf-8") as file: #update for all
+#with open("term_bank_1.json", "r", encoding="utf-8") as file: #update for all
    #data = json.load(file)
 
 '''
 parsed = []
 
 for entry in data:
-   expression = entry[0]
-   reading = entry[1]
-   tags = entry[2].split() if entry[2] else []
-   rules = entry[3]
-   score = entry[4]
-   glossary = entry[5]
-   sequence = entry[6] if len(entry) > 6 else None
+    expression = entry[0]
+    reading = entry[1]
+    tags = entry[2].split() if entry[2] else []
+    rules = entry[3]
+    score = entry[4]
+    glossary = entry[5]
+    sequence = entry[6] if len(entry) > 6 else None
 
 
-   clean_defs = parse_glossary(glossary)
+    clean_defs = parse_glossary(glossary)
 
-   parsed.append(
-      {
-         "expression": expression,
-         "reading": reading,
-         "tags": tags,
-         "score": score,
-         "definitions": clean_defs,
-         "sequence_id": sequence
-         }
-      )
+    parsed.append(
+        {
+            "expression": expression,
+            "reading": reading,
+            "tags": tags,
+            "score": score,
+            "part-of-speech-info": clean_defs.get('part-of-speech-info',""),
+            "definition": clean_defs.get('glossary',""),
+            "example-sentence-a": clean_defs.get('example-sentence-a',""),
+            "example-sentence-b": clean_defs.get('example-sentence-b',""),
+            "sequence_id": sequence
+        }
+    )
 '''
