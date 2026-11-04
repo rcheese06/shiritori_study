@@ -1,61 +1,26 @@
-import { useEffect, useState } from 'react';
-import './App.css';
-import QuizDecks from './quizdecks.jsx';
-import QuizDecksSettings from './quizdecksettings.jsx';
+import { useState } from 'react';
+//import './App.css';
+import DictPage from './dictPage.jsx';
+import StudyPage from './studyPage.jsx';
 
 function App() {
-  const [decks, setDecks] = useState([]);
-  const [selectedDeck, setSelectedDeck] = useState(null);
-  const [page, setPage] = useState('decks');
-  const [error, setError] = useState('');
+    const [activePage, setActivePage] = useState('study');
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function loadDecks() {
-      try {
-        const response = await fetch('/api/deck', { signal: controller.signal });
-        if (!response.ok) {
-          throw new Error(`Failed to load decks (${response.status})`);
-        }
-
-        const data = await response.json();
-        if (!Array.isArray(data)) {
-          throw new Error('The deck response was not a list');
-        }
-
-        setDecks(data);
-      } catch (fetchError) {
-        if (!controller.signal.aborted) {
-          setError(fetchError.message);
-        }
-      }
-    }
-
-    loadDecks();
-    return () => controller.abort();
-  }, []);
-
-  return (
-    <main>
-      {error && <p role="alert">{error}</p>}
-      {page === 'decks' && (
-        <QuizDecks
-          decks={decks}
-          onSettings={(deck) => {
-            setSelectedDeck(deck);
-            setPage('settings');
-          }}
-        />
-      )}
-      {page === 'settings' && selectedDeck && (
-        <QuizDecksSettings
-          deck={selectedDeck}
-          onBackToHome={() => setPage('decks')}
-        />
-      )}
-    </main>
-  );
+    return (
+        <div className="main-app">
+            <div className="app-content">
+              {activePage === 'study' ? <StudyPage /> : <DictPage />}
+            </div>
+            <nav className="page-switcher">
+                <button type="button" onClick={() => setActivePage('study')}>
+                  Study
+                </button>
+                <button type="button" onClick={() => setActivePage('dictionary')}>
+                  Dictionary
+                </button>
+            </nav>
+        </div>
+    );
 }
 
 export default App;
