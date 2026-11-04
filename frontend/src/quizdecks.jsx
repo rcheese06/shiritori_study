@@ -1,6 +1,9 @@
-import {shuffler} from './utils/quiz';
-
 export default function QuizDecks({ decks, onStudy, onSettings }) {
+    function onAddDeck() {
+        // Implement the logic to add a new deck
+        console.log('Add Deck button clicked');
+    }
+
     return (
         <div className="quiz-page">
             <header className="page-header">
