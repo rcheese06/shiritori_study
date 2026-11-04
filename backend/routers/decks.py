@@ -76,3 +76,21 @@ def get_deck_words(deck_id: int):
             (deck_id,),
         ).fetchall()
         return [row["word"] for row in rows]
+
+
+@router.delete("/deck/{deck_id}/words")
+def remove_word(deck_id: int, item: WordInput):
+    with closing(connect_db()) as con:
+        deck = con.execute(
+            "SELECT id FROM decks WHERE id = ?", (deck_id,)
+        ).fetchone()
+        if deck is None:
+            raise HTTPException(status_code=404, detail="Deck not found")
+
+        with con:
+            con.execute(
+                "DELETE FROM deck_words WHERE deck_id = ? AND word = ?",
+                (deck_id, item.word),
+            )
+
+    return {"deck_id": deck_id, "word": item.word}
