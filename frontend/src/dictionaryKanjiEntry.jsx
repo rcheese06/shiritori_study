@@ -1,6 +1,7 @@
+import AddToDeck from './dictionaryAddToDeck.jsx';
+import './dictPage.css';
 
-
-export default function KanjiEntry({ kanji, on=[], kun=[], stroke, definitions=[] }) {
+export default function KanjiEntry({ kanji, on = [], kun = [], stroke, definitions = [] }) {
     return (
         <div className="dictionary-entry">
             <div className="dictionary-word-heading">
@@ -10,6 +11,7 @@ export default function KanjiEntry({ kanji, on=[], kun=[], stroke, definitions=[
             <p>Onyomi: {on.join(', ')}</p>
             <p>Kunyomi: {kun.join(', ')}</p>
             <p>Strokes: {stroke}</p>
+            //meaning
         </div>
     );
 }

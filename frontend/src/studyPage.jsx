@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import QuizDecks from './quizDecks.jsx';
 import QuizDecksSettings from './quizDeckSettings.jsx';
+import './studyPage.css';
 
 function StudyPage() {
     const [decks, setDecks] = useState([]);
