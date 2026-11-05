@@ -142,8 +142,11 @@ def search_kanji(text):
         return kanji_info(text)
     #alphabet to jp (note: alphabet does not mean english)
     else:
-        rom = kanji_info(rom_to_kan(text))
-        if rom != []: #there is a match, it is romaji
+        rom = kanji_info(rom_to_kan(text)) #kunyomi stored as hiragana
+        rom_katakana = kanji_info((rom_to_kan(text, katakana=True))) #onyomi stored as katakana
+        if rom != []: #hiragana priority
             return rom
+        elif rom_katakana != []: 
+            return rom_katakana
         else: #no exact match, english
             return kanji_by_meaning(text)
