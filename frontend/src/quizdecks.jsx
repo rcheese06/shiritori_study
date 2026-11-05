@@ -1,3 +1,5 @@
+import './studyPage.css';
+
 export default function QuizDecks({ decks, onStudy, onSettings }) {
     function onAddDeck() {
         // Implement the logic to add a new deck
