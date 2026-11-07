@@ -3,7 +3,7 @@ import sqlite3
 from contextlib import closing
 from pathlib import Path
 
-from backend.rom_converter import rom_to_kan
+from rom_converter import rom_to_kan
 
 DB_PATH = Path(__file__).resolve().parent / "dictionary.db"
 
@@ -15,7 +15,7 @@ def _connect():
     con.row_factory = sqlite3.Row
     return con
 
-_JP = re.compile(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9faf\uf900-\ufaff]")
+_JP = re.compile(r"[\u3005\u3040-\u30ff\u31f0-\u31ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]")
 
 #clean user inputs
 def _fts_query(text, prefix=True):
@@ -64,6 +64,7 @@ def word_by_meaning(meaning):
     return [_dict_entries(row) for row in rows]
 
 def search_word(text):
+    print("debug:", repr(text))
     text = text.strip()
     #jp to en
     if _JP.search(text):
