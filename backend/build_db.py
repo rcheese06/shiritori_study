@@ -43,24 +43,24 @@ def build_words(con):
 
     with zipfile.ZipFile(JIT_PATH, "r") as zf:
         names = [n for n in zf.namelist() if re.fullmatch(r"(?:.*/)?term_bank_\d+\.json", n)]
+        rows = []
         for name in sorted(names, key=index):
             with zf.open(name) as file:
                 data = json.load(file)
-
-        rows = []
-        for entry in data:
-            definitions = jparser.parse_glossary(entry[5]) if entry[5] else {}
-            rows.append((
-                entry[0],
-                entry[1],
-                " ".join(entry[2]) if entry[2] else None,
-                entry[4],
-                definitions.get("part-of-speech-info", ""),
-                definitions.get("glossary", ""),
-                definitions.get("example-sentence-a", ""),
-                definitions.get("example-sentence-b", ""),
-                entry[6] if entry[6] else None,
-            ))
+  
+            for entry in data:
+                definitions = jparser.parse_glossary(entry[5]) if entry[5] else {}
+                rows.append((
+                    entry[0],
+                    entry[1],
+                    " ".join(entry[2]) if entry[2] else None,
+                    entry[4],
+                    definitions.get("part-of-speech-info", ""),
+                    definitions.get("glossary", ""),
+                    definitions.get("example-sentence-a", ""),
+                    definitions.get("example-sentence-b", ""),
+                    entry[6] if entry[6] else None,
+                ))
 
     con.executemany("""
         INSERT INTO entries (expression, reading, tags, score, part_of_speech_info, definition, example_sentence_a, example_sentence_b, sequence_id)
@@ -76,15 +76,18 @@ def build_words(con):
     #FTS5 for english meaning search
     con.execute("""
         CREATE VIRTUAL TABLE glossary_fts USING fts5(
-            text,
+            definition,
+            content='entries',
+            content_rowid='id',
             tokenize = 'porter unicode61'
         )
     """)
-    fts_rows = []
-    for id, definition in con.execute("SELECT id, definition FROM entries").fetchall():
-        if definition and definition.strip():
-            fts_rows.append((id, definition))
-    con.executemany("INSERT INTO glossary_fts (rowid, text) VALUES (?, ?)", fts_rows)
+    #fts_rows = []
+    #for id, definition in con.execute("SELECT id, definition FROM entries").fetchall():
+    #    if definition and definition.strip():
+    #        fts_rows.append((id, definition))
+    #con.executemany("INSERT INTO glossary_fts (rowid, text) VALUES (?, ?)", fts_rows)
+    con.execute("INSERT INTO glossary_fts(glossary_fts) VALUES('rebuild')")
     con.commit()
 
 def build_kanji(con):
