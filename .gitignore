@@ -25,4 +25,4 @@ dist-ssr
 
 #dictionary database
 backend/dictionary.db
-*.db
+*.dbbackend/dictionary.db
