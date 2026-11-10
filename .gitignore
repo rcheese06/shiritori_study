@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+#dictionary database
+backend/dictionary.db
+*.db
