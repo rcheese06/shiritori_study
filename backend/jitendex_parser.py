@@ -9,6 +9,8 @@ def concat_child(node):
     if isinstance(node, list):
         return "".join(concat_child(n) for n in node)
     if isinstance(node, dict):
+        if node.get("tag") == "rt" or node.get("tag") == "rp":
+            return ""
         return concat_child(node.get("content"))
     return ""
 
@@ -32,34 +34,36 @@ def first_text(node, key):
     return None
 
 def parse_glossary(array):
-    result = {}
+    result = {"senses": []}
 
     for a in array:
         for group in find(a, "sense-group"):
             pos = sorted({concat_child(n) for n in find(group, "part-of-speech-info")})
  
             for sense in find(group, "sense"):
-                if pos:
-                    #result.append({"part-of-speech-info": ", ".join(pos)})
-                    result["part-of-speech-info"] = ",".join(pos)
+                #if pos:
+                    #result["part-of-speech-info"] = ",".join(pos)
  
                 glosses = [concat_child(li)
                            for g in find(sense, "glossary")
                            for li in walk(g.get("content"))
                            if li.get("tag") == "li"]
-                if glosses:
-                    #result.append({"glossary": ", ".join(glosses)})
-                    result["glossary"] = ",".join(glosses)
+                #if glosses:
+                    #result["glossary"] = ",".join(glosses)
 
+                examples = []
                 for ex in find(sense, "example-sentence"):
                     jp = first_text(ex, "example-sentence-a")
                     en = first_text(ex, "example-sentence-b")
-                    if jp is not None:
-                        #result.append({"example-sentence-a": jp})
-                        result["example-sentence-a"] = jp
-                    if en is not None:
-                        #result.append({"example-sentence-b": en})
-                        result["example-sentence-b"] = en
+                    if jp is not None or en is not None:
+                        examples.append({"a": jp, "b": en})
+
+                if glosses or examples:
+                    result["senses"].append({
+                        "part_of_speech_info": pos,
+                        "glosses": glosses,
+                        "examples": examples,
+                    })
  
         attribution = first_text(a, "attribution")
         if attribution is not None:

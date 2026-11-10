@@ -25,21 +25,50 @@ def build_db():
     build_words(con)
     build_kanji(con)
 
+#part_of_speech_info(POS): noun, verb, etc.
+#each entry has multiple POS (sense table)
+#each POS has multiple definitions (gloss table)
+#each POS can have a example sentence (sentence table)
 def build_words(con):
-    con.execute("""
-        CREATE TABLE entries (
+    con.executescript("""
+        CREATE TABLE vocab (
             id INTEGER PRIMARY KEY,
             expression TEXT NOT NULL,
             reading TEXT,
             tags TEXT,
             score INTEGER,
-            part_of_speech_info TEXT,
-            definition TEXT,
-            example_sentence_a TEXT,
-            example_sentence_b TEXT,
             sequence_id TEXT
-        )
+        );
+
+        CREATE TABLE vocab_senses (
+            id INTEGER PRIMARY KEY,
+            entry_id INTEGER NOT NULL,
+            position INTEGER,
+            part_of_speech_info TEXT,
+            FOREIGN KEY (entry_id) REFERENCES vocab(id)
+        );
+
+        CREATE TABLE vocab_glosses (
+            id INTEGER PRIMARY KEY,
+            sense_id INTEGER NOT NULL,
+            entry_id INTEGER NOT NULL,
+            position INTEGER,
+            definition TEXT,
+            FOREIGN KEY (entry_id) REFERENCES vocab(id),
+            FOREIGN KEY (sense_id) REFERENCES vocab_senses(id)
+        );
+
+        CREATE TABLE vocab_sentences(
+            id INTEGER PRIMARY KEY,
+            sense_id INTEGER NOT NULL,
+            jp TEXT,
+            en TEXT,
+            FOREIGN KEY (sense_id) REFERENCES vocab_senses(id)
+        );
     """)
+
+    entry_rows, sense_rows, gloss_rows, example_rows = [], [], [], []
+    entry_id = sense_id = gloss_id = example_id = 0
 
     with zipfile.ZipFile(JIT_PATH, "r") as zf:
         names = [n for n in zf.namelist() if re.fullmatch(r"(?:.*/)?term_bank_\d+\.json", n)]
@@ -49,35 +78,49 @@ def build_words(con):
                 data = json.load(file)
   
             for entry in data:
-                definitions = jparser.parse_glossary(entry[5]) if entry[5] else {}
-                rows.append((
-                    entry[0],
+                parsed = jparser.parse_glossary(entry[5]) if entry[5] else {}
+                entry_id += 1
+                entry_rows.append((
+                    entry_id, 
+                    entry[0], 
                     entry[1],
-                    " ".join(entry[2]) if entry[2] else None,
-                    entry[4],
-                    definitions.get("part-of-speech-info", ""),
-                    definitions.get("glossary", ""),
-                    definitions.get("example-sentence-a", ""),
-                    definitions.get("example-sentence-b", ""),
-                    entry[6] if entry[6] else None,
+                    entry[2] or None, 
+                    entry[4], 
+                    entry[6] or None
                 ))
 
-    con.executemany("""
-        INSERT INTO entries (expression, reading, tags, score, part_of_speech_info, definition, example_sentence_a, example_sentence_b, sequence_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, rows)
+                for s_pos, sense in enumerate(parsed.get("senses", [])):
+                    sense_id += 1
+                    sense_rows.append((sense_id, entry_id, s_pos, ",".join(sense["part_of_speech_info"])))
+
+                    for g_pos, text in enumerate(sense["glosses"]):
+                        gloss_id += 1
+                        gloss_rows.append((gloss_id, sense_id, entry_id, g_pos, text))
+
+                    for ex in sense["examples"]:
+                        example_id += 1
+                        example_rows.append((example_id, sense_id, ex["a"], ex["b"]))
+
+    con.executemany("INSERT INTO vocab VALUES (?, ?, ?, ?, ?, ?)", entry_rows)
+    con.executemany("INSERT INTO vocab_senses VALUES (?, ?, ?, ?)", sense_rows)
+    con.executemany("INSERT INTO vocab_glosses VALUES (?, ?, ?, ?, ?)", gloss_rows)
+    con.executemany("INSERT INTO vocab_sentences VALUES (?, ?, ?, ?)", example_rows)
     con.commit()
 
     #indexes
-    con.execute("CREATE INDEX jit_index_expression ON entries(expression)")
-    con.execute("CREATE INDEX jit_index_reading ON entries(reading)")
+    con.execute("CREATE INDEX index_entries_expression ON vocab(expression)")
+    con.execute("CREATE INDEX index_entries_reading ON vocab(reading)")
+    con.execute("CREATE INDEX index_senses_entry ON vocab_senses(entry_id)")
+    con.execute("CREATE INDEX index_glosses_sense ON vocab_glosses(sense_id)")
+    con.execute("CREATE INDEX index_glosses_entry ON vocab_glosses(entry_id)")
+    con.execute("CREATE INDEX index_examples_sense ON vocab_sentences(sense_id)")
     con.commit()
 
     #FTS5 for english meaning search
     con.execute("""
         CREATE VIRTUAL TABLE glossary_fts USING fts5(
             definition,
-            content='entries',
+            content='vocab_glosses',
             content_rowid='id',
             tokenize = 'porter unicode61'
         )
@@ -90,8 +133,8 @@ def build_words(con):
     con.execute("INSERT INTO glossary_fts(glossary_fts) VALUES('rebuild')")
     con.commit()
 
+#normalised 3 tables for kanji info, reading, meaning
 def build_kanji(con):
-    #normalised 3 tables for kanji
     con.executescript("""
         CREATE TABLE kanji (
             literal TEXT PRIMARY KEY,

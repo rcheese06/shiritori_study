@@ -134,7 +134,6 @@ export default function DictPage() {
                                 '/api/dictionary/kanji',
                                 setKanjiResults,
                                 setKanjiError,
-                                setKanjiSearched,
                             )}
                         >
                             <label htmlFor="kanji-query">Kanji</label>

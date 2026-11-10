@@ -26,27 +26,46 @@ def _fts_query(text, prefix=True):
     suffix = "*" if prefix else ""
     return " ".join(f'"{t}"{suffix}' for t in tokens)
 
-#dict structure for jitendex words
-def _dict_entries(row):
-    return {
-        "expression": row["expression"],
-        "reading": row["reading"],
-        "tags": row["tags"].split() if row["tags"] else [],
-        "score": row["score"],
-        "part-of-speech-info": row["part_of_speech_info"].split(",") if row["part_of_speech_info"] else "",
-        "definitions": row["definition"].split(",") if row["definition"] else [],
-        "example-sentence-a": row["example_sentence_a"] if row["example_sentence_a"] else "",
-        "example-sentence-b": row["example_sentence_b"] if row["example_sentence_b"] else "",
-        "sequence_id": row["sequence_id"]
-            }
+def dict_entries(con, rows):
+    rows = [int(i[0]) if isinstance(i, sqlite3.Row) else int(i) for i in rows]
+    if not rows:
+        return []
+    marks = ",".join("?" * len(rows))
+
+    entries = {r["id"]: {
+        "expression": r["expression"], "reading": r["reading"],
+        "tags": r["tags"].split() if r["tags"] else [],
+        "score": r["score"], "sequence_id": r["sequence_id"], "senses": [],
+    } for r in con.execute(f"SELECT * FROM vocab WHERE id IN ({marks})", rows)}
+
+    senses = {}
+    for r in con.execute(
+        f"SELECT * FROM vocab_senses WHERE entry_id IN ({marks}) ORDER BY entry_id, position", rows
+    ):
+        senses[r["id"]] = {"part_of_speech_info": r["part_of_speech_info"].split(",") if r["part_of_speech_info"] else [], "glosses": [], "examples": []}
+        entries[r["entry_id"]]["senses"].append(senses[r["id"]])
+
+    for r in con.execute(
+        f"SELECT sense_id, definition FROM vocab_glosses WHERE entry_id IN ({marks}) ORDER BY sense_id, position", rows
+    ):
+        senses[r["sense_id"]]["glosses"].append(r["definition"])
+
+    for r in con.execute(
+        f"SELECT sense_id, jp, en FROM vocab_sentences WHERE sense_id IN "
+        f"(SELECT id FROM vocab_senses WHERE entry_id IN ({marks}))", rows
+    ):
+        senses[r["sense_id"]]["examples"].append({"a": r["jp"], "b": r["en"]})
+
+    return [entries[i] for i in rows if i in entries]
+    
 
 #lookup word from jitendex
 def word_info(word): #takes a word in japanese script (kanji & kana only)
     with closing(_connect()) as con:
         rows = con.execute("""
-            SELECT * FROM entries WHERE expression = ? OR reading = ?
+            SELECT * FROM vocab WHERE expression = ? OR reading = ?
         """, (word, word)).fetchall()
-    return [_dict_entries(row) for row in rows]
+        return dict_entries(con, rows)
 
 #lookup by english meaning
 def word_by_meaning(meaning):
@@ -54,14 +73,16 @@ def word_by_meaning(meaning):
     if not query:
         return []
     with closing(_connect()) as con:
-        rows = con.execute("""
-            SELECT e.* FROM glossary_fts f
-            JOIN entries e ON e.id = f.rowid
-            WHERE glossary_fts MATCH ?
-            ORDER BY f.rank, e.score DESC
-            LIMIT ?
-        """, (query, 50)).fetchall()
-    return [_dict_entries(row) for row in rows]
+        rows = [r[0] for r in con.execute("""
+            SELECT g.entry_id
+            FROM glosses_fts
+            JOIN glosses g ON g.id = glosses_fts.rowid
+            WHERE glosses_fts MATCH ?
+            GROUP BY g.entry_id
+            ORDER BY MIN(glosses_fts.rank), MAX((SELECT score FROM vocab WHERE id = g.entry_id)) DESC
+            LIMIT 30
+        """, (query,))]
+        return dict_entries(con, rows)
 
 def search_word(text):
     print("debug:", repr(text))
@@ -80,7 +101,13 @@ def search_word(text):
 
 #lookup kanji from kanjidic2
 def _is_kanji(char):
-    return '\u4e00' <= char <= '\u9faf' or '\u3400' <= char <= '\u4dbf' #idk if this is right pls check
+    return (
+        '\u4e00' <= char <= '\u9fff'
+        or '\u3400' <= char <= '\u4dbf'
+        or '\uf900' <= char <= '\ufaff'
+        or '\U00020000' <= char <= '\U0002fa1f'
+        or char == '\u3005'
+    ) 
 
 #lookup by exact kanji
 def kanji_info(kanji):

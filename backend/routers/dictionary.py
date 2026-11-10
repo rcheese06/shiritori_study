@@ -6,10 +6,10 @@ router = APIRouter(prefix="/dictionary")
 
 
 @router.get("/search")
-def search_words(text: str = Query(min_length=1)):
+def vocab_route(text: str = Query(min_length=1)):
     return search_word(text)
 
 
 @router.get("/kanji")
-def search_kanji(text: str = Query(min_length=1)):
+def kanji_route(text: str = Query(min_length=1)):
     return search_kanji(text)
