@@ -145,13 +145,14 @@ def kanji_by_reading(reading):
         WHERE r.plaintext_reading = ?
     """
     params = [reading]
-    if type:
-        sql += " AND r.type = ?"
-        params.append(type)
+    #if reading_type:
+        #sql += " AND r.type = ?"
+        #params.append(reading_type)
 
     sql += " ORDER BY k.freq IS NULL, k.freq" #order by most common, null last
     with closing(_connect()) as con:
-        return [dict(r) for r in con.execute(sql, params)]
+        rows = con.execute(sql, params).fetchall()
+    return kanji_info("".join(r["literal"] for r in rows))
 
 #lookup by meanings
 def kanji_by_meaning(meaning): #switch to fts5 maybe? faster
@@ -159,7 +160,7 @@ def kanji_by_meaning(meaning): #switch to fts5 maybe? faster
         rows = con.execute("""
             SELECT k.* from kanji k
             JOIN kanji_meanings m ON k.literal = m.literal
-            WHERE m.meaning LIKE ?
+            WHERE m.meaning = ? COLLATE NOCASE
             GROUP BY k.literal
             ORDER BY k.freq IS NULL, k.freq
         """, (f"%{meaning}%",)).fetchall()
@@ -168,11 +169,16 @@ def kanji_by_meaning(meaning): #switch to fts5 maybe? faster
 def search_kanji(text):
     text = text.strip()
     if _JP.search(text):
-        return kanji_info(text)
+        for char in text: #if at least one kanji
+            if _is_kanji(char): 
+                print("kanji search")
+                return kanji_info(text)
+        print("kanji reading search")
+        return kanji_by_reading(text) #does not contain kanji, hira/kata reading
     #alphabet to jp (note: alphabet does not mean english)
     else:
-        rom = kanji_info(rom_to_kan(text)) #kunyomi stored as hiragana
-        rom_katakana = kanji_info((rom_to_kan(text, katakana=True))) #onyomi stored as katakana
+        rom = kanji_by_reading(rom_to_kan(text)) #kunyomi stored as hiragana
+        rom_katakana = kanji_by_reading((rom_to_kan(text, katakana=True))) #onyomi stored as katakana
         if rom != []: #hiragana priority
             return rom
         elif rom_katakana != []: 

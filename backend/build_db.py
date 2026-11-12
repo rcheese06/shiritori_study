@@ -184,6 +184,7 @@ def build_kanji(con):
     #indexes
     con.execute("CREATE INDEX kan_index_rd_literal ON kanji_readings(literal)")
     con.execute("CREATE INDEX kan_index_rd_reading ON kanji_readings(reading)")
+    con.execute("CREATE INDEX kan_index_rd_plain ON kanji_readings(plaintext_reading)")
     con.execute("CREATE INDEX kan_index_mn_literal ON kanji_meanings(literal)")
     con.execute("CREATE INDEX kan_index_mn_meaning ON kanji_meanings(meaning)")
     con.commit()
