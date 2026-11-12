@@ -76,7 +76,8 @@ def word_by_meaning(meaning):
         rows = [r[0] for r in con.execute("""
             SELECT g.entry_id
             FROM glosses_fts
-            JOIN glosses g ON g.id = glosses_fts.rowid
+            JOIN vocab_glosses g ON g.id = glosses_fts.rowid
+            JOIN vocab v ON v.id = g.entry_id
             WHERE glosses_fts MATCH ?
             GROUP BY g.entry_id
             ORDER BY MIN(glosses_fts.rank), MAX((SELECT score FROM vocab WHERE id = g.entry_id)) DESC

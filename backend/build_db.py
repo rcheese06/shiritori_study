@@ -118,7 +118,7 @@ def build_words(con):
 
     #FTS5 for english meaning search
     con.execute("""
-        CREATE VIRTUAL TABLE glossary_fts USING fts5(
+        CREATE VIRTUAL TABLE glosses_fts USING fts5(
             definition,
             content='vocab_glosses',
             content_rowid='id',
@@ -129,8 +129,8 @@ def build_words(con):
     #for id, definition in con.execute("SELECT id, definition FROM entries").fetchall():
     #    if definition and definition.strip():
     #        fts_rows.append((id, definition))
-    #con.executemany("INSERT INTO glossary_fts (rowid, text) VALUES (?, ?)", fts_rows)
-    con.execute("INSERT INTO glossary_fts(glossary_fts) VALUES('rebuild')")
+    #con.executemany("INSERT INTO glosses_fts (rowid, text) VALUES (?, ?)", fts_rows)
+    con.execute("INSERT INTO glosses_fts(glosses_fts) VALUES('rebuild')")
     con.commit()
 
 #normalised 3 tables for kanji info, reading, meaning
