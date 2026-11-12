@@ -98,7 +98,8 @@ export default function AddToDeck({ word }) {
 
     return (
         <div className="add-to-deck">
-            <button type="button" onClick={loadDecks}>+</button>
+            <button type="button" className="add-button" onClick={loadDecks}>+</button>
+            
             {isOpen && (
                 <div className="deck-modal-backdrop" onClick={() => setIsOpen(false)}>
                     <section

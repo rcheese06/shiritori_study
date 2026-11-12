@@ -32,9 +32,8 @@ export default function QuizDecks({ decks, onStudy, onSettings }) {
                     </li>
                 ))}
             </ul>
-            <div className="add-deck">
-                <button onClick={() => onAddDeck()}>Add Deck</button>
-            </div>
+            
+            <button className="add-button" onClick={() => onAddDeck()}>Add Deck</button>
         </div>
     );
 }

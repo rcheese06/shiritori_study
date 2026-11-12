@@ -3,20 +3,24 @@ import './dictPage.css';
 
 export default function KanjiEntry({ kanji, on = [], kun = [], stroke, meanings = [] }) {
     return (
-        <div className="dictionary-entry">
-            <div className="dictionary-word-heading">
-                <h3>{kanji}</h3>
-                <AddToDeck word={kanji} />
+        <div className="dict-entry">
+            <div className="dict-word-heading">
+                <h3 className="dict-word">{kanji}</h3>
+                <div>
+                    <p className="dict-reading">Onyomi: {on.join(', ')}</p>
+                    <p className="dict-reading">Kunyomi: {kun.join(', ')}</p>
+                    <p className="dict-reading">Strokes: {stroke}</p>
+                </div>
             </div>
-            <p>Onyomi: {on.join(', ')}</p>
-            <p>Kunyomi: {kun.join(', ')}</p>
-            <p>Strokes: {stroke}</p>
             
-            <ul className="dictionary-sense">
+            
+            <ol className="dict-sense">
                 {meanings.map((meaning, i) => (
                     <li key={i}>{meaning}</li>
                 ))}
-            </ul>
+            </ol>
+
+            <AddToDeck word={kanji} />
         </div>
     );
 }

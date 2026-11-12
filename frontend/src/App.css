@@ -35,3 +35,14 @@
     color: #3d3d3d;
     transition: background-color 0.3s ease;
 }
+
+.add-button {
+    background-color: #fcb529;
+    border: 0px solid #ccc;
+    padding: 10px 20px;
+    border-radius: 500px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
