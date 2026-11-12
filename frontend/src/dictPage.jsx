@@ -109,13 +109,13 @@ export default function DictPage() {
                             </p>
                         )}
                         <div className="dictionary-results">
-                            //show multiple entries
+                            {/*show multiple entries*/}
                             {wordResults.map((entry, index) => (
                                 <WordEntry
                                     key={`${entry.expression}-${entry.reading}-${index}`}
                                     word={entry.expression}
                                     reading={entry.reading}
-                                    definitions={entry.definitions}
+                                    senses={entry.senses}
                                 />
                             ))}
                         </div>
@@ -165,7 +165,7 @@ export default function DictPage() {
                                     on={entry.on}
                                     kun={entry.kun}
                                     stroke={entry.stroke}
-                                    definitions={entry.meanings}
+                                    meanings={entry.meanings}
                                 />
                             ))}
                         </div>
