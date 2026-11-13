@@ -18,7 +18,7 @@ def _connect():
 _JP = re.compile(r"[\u3005\u3040-\u30ff\u31f0-\u31ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]")
 
 #clean user inputs
-def _fts_query(text, prefix=True):
+def _fts_query(text, prefix=False):
     tokens = [t.replace('"', "") for t in text.split()]
     tokens = [t for t in tokens if t]
     if not tokens:
@@ -69,20 +69,64 @@ def word_info(word): #takes a word in japanese script (kanji & kana only)
 
 #lookup by english meaning
 def word_by_meaning(meaning):
-    query = _fts_query(meaning)
-    if not query:
+    exact = _fts_query(meaning, prefix=False)
+    if not exact:
         return []
-    with closing(_connect()) as con:
-        rows = [r[0] for r in con.execute("""
+    non_exact = _fts_query(meaning, prefix=True)
+    old_sql = """
             SELECT g.entry_id
             FROM glosses_fts
             JOIN vocab_glosses g ON g.id = glosses_fts.rowid
+            JOIN vocab_senses s ON s.id = g.sense_id
             JOIN vocab v ON v.id = g.entry_id
             WHERE glosses_fts MATCH ?
+            AND instr(
+                ' ' || replace(replace(replace(replace(replace(
+                    lower(g.definition), ';', ' '), ',', ' '), '(', ' '), ')', ' '), '/', ' ') || ' ',
+                ' ' || ? || ' '
+            ) > 0
             GROUP BY g.entry_id
-            ORDER BY MIN(glosses_fts.rank), MAX((SELECT score FROM vocab WHERE id = g.entry_id)) DESC
+            ORDER BY MIN(s.position * 1000 + g.position), MAX(v.score) DESC
             LIMIT 30
-        """, (query,))]
+        """
+    
+    sql = """
+            WITH hits AS (
+                SELECT
+                    g.entry_id,
+                    s.position AS sp,
+                    g.position AS gp,
+                    instr(
+                        ' ' || replace(replace(replace(replace(replace(
+                            lower(g.definition), ';', ' '), ',', ' '), '(', ' '), ')', ' '), '/', ' ') || ' ',
+                        ' ' || ? || ' '
+                    ) AS hit
+                FROM glosses_fts
+                JOIN vocab_glosses g ON g.id = glosses_fts.rowid
+                JOIN vocab_senses s ON s.id = g.sense_id
+                WHERE glosses_fts MATCH ?
+            )
+            SELECT h.entry_id
+            FROM hits h
+            JOIN vocab v ON v.id = h.entry_id
+            WHERE h.hit > 0
+            GROUP BY h.entry_id
+            ORDER BY
+                MIN(h.hit),
+                MIN(h.sp * 1000 + h.gp),
+                MAX(v.score) DESC,
+                h.entry_id
+            LIMIT 30
+        """
+    with closing(_connect()) as con:
+        rows = [r[0] for r in con.execute(sql, (meaning.lower(), exact))]
+        #show non_exact results after exact results
+        if len(rows) < 30:
+            for r in con.execute(sql, (non_exact,)):
+                if r[0] not in rows:
+                    rows.append(r[0])
+                if len(rows) >= 30:
+                    break
         return dict_entries(con, rows)
 
 def search_word(text):
