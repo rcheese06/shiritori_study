@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './dictPage.css';
 import KanjiEntry from './dictionaryKanjiEntry.jsx';
 import WordEntry from './dictionaryWordEntry.jsx';
+import DictionarySearchArea from './dictSearch.jsx';
 
 export default function DictPage() {
     const [activeTab, setActiveTab] = useState('word');
@@ -74,10 +75,7 @@ export default function DictPage() {
 
                 {activeTab === 'word' ? (
                     //vocab tab
-                    <section
-                        id="word-search-panel"
-                        role="tabpanel"
-                    >
+                    <section id="word-search-panel" className="search-section" role="tabpanel">
                         <form
                             className="dict-search-form"
                             onSubmit={(event) => searchDictionary(
@@ -86,20 +84,15 @@ export default function DictPage() {
                                 '/api/dictionary/search',
                                 setWordResults,
                                 setWordError,
+                                setWordSearched
                             )}
                         >
-                            <label htmlFor="word-query">Word or meaning</label>
-                            <div className="dict-search-controls">
-                                <input
-                                    className="dict-search-bar"
-                                    id="word-query"
-                                    value={wordQuery}
-                                    onChange={(event) => setWordQuery(event.target.value)}
-                                />
-                                <button type="submit" className="add-button" disabled={isSearching}>
-                                    Search
-                                </button>
-                            </div>
+                            <DictionarySearchArea
+                                wordType="vocabulary"
+                                query={wordQuery}
+                                setQuery={setWordQuery}
+                                isSearching={isSearching}
+                            />
                         </form>
                         {wordError && <p role="alert">{wordError}</p>}
                         {isSearching && <p>Searching...</p>}
@@ -107,7 +100,7 @@ export default function DictPage() {
                             <p>
                                 {wordSearched
                                     ? 'No matching words found.'
-                                    : 'Search for a Japanese word or an English meaning.'}
+                                    : 'Search for a Japanese word or an using its reading or its english meaning.'}
                             </p>
                         )}
                         <div className="dict-results">
@@ -124,10 +117,7 @@ export default function DictPage() {
                     </section>
                 ) : (
                     //kanji tab
-                    <section
-                        id="kanji-search-panel"
-                        role="tabpanel"
-                    >
+                    <section id="kanji-search-panel" className="search-section" role="tabpanel">
                         <form
                             className="dict-search-form"
                             onSubmit={(event) => searchDictionary(
@@ -136,20 +126,15 @@ export default function DictPage() {
                                 '/api/dictionary/kanji',
                                 setKanjiResults,
                                 setKanjiError,
+                                setKanjiSearched
                             )}
                         >
-                            <label htmlFor="kanji-query">Kanji</label>
-                            <div className="dict-search-controls">
-                                <input
-                                    className="dict-search-bar"
-                                    id="kanji-query"
-                                    value={kanjiQuery}
-                                    onChange={(event) => setKanjiQuery(event.target.value)}
-                                />
-                                <button type="submit" className="add-button" disabled={isSearching}>
-                                    Search
-                                </button>
-                            </div>
+                            <DictionarySearchArea
+                                wordType="kanji"
+                                query={kanjiQuery}
+                                setQuery={setKanjiQuery}
+                                isSearching={isSearching}
+                            />
                         </form>
                         {kanjiError && <p role="alert">{kanjiError}</p>}
                         {isSearching && <p>Searching...</p>}
