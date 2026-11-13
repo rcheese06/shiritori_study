@@ -4,7 +4,8 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background-color: #dece98;
+    background-color: #F6E8C8;
+    color: #4c4637;
 }
 
 .app-content {
@@ -13,7 +14,9 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    width: 100%;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .page-switcher {
@@ -37,10 +40,12 @@
 }
 
 .add-button {
-    background-color: #fcb529;
-    border: 0px solid #ccc;
+    background-color: #F2C94C;
+    border: none;
+    color:#4c4637;
     padding: 10px 20px;
     border-radius: 500px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     align-items: center;
     justify-content: center;
     cursor: pointer;
