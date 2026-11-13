@@ -70,13 +70,8 @@ def rom_to_kan(text, katakana=False):
     while index < len(rom):
         char = rom[index]
 
-        #nn -> ん
-        if rom.startswith("nn"):
-            result += "ん"
-            index += 2
-            continue
-        #n' -> ん
-        if rom.startswith("n'"):
+        #nn -> ん or n' -> ん
+        if rom.startswith("nn",index) or rom.startswith("n'",index):
             result += "ん"
             index += 2
             continue

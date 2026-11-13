@@ -61,6 +61,7 @@ def dict_entries(con, rows):
 
 #lookup word from jitendex
 def word_info(word): #takes a word in japanese script (kanji & kana only)
+    print("debug: word_info")
     with closing(_connect()) as con:
         rows = con.execute("""
             SELECT * FROM vocab WHERE expression = ? OR reading = ?
@@ -69,10 +70,10 @@ def word_info(word): #takes a word in japanese script (kanji & kana only)
 
 #lookup by english meaning
 def word_by_meaning(meaning):
-    exact = _fts_query(meaning, prefix=False)
-    if not exact:
+    print("debug: word_by_meaning")
+    query = _fts_query(meaning, prefix=True)
+    if not query:
         return []
-    non_exact = _fts_query(meaning, prefix=True)
     old_sql = """
             SELECT g.entry_id
             FROM glosses_fts
@@ -91,42 +92,38 @@ def word_by_meaning(meaning):
         """
     
     sql = """
-            WITH hits AS (
-                SELECT
-                    g.entry_id,
-                    s.position AS sp,
-                    g.position AS gp,
-                    instr(
-                        ' ' || replace(replace(replace(replace(replace(
-                            lower(g.definition), ';', ' '), ',', ' '), '(', ' '), ')', ' '), '/', ' ') || ' ',
-                        ' ' || ? || ' '
-                    ) AS hit
-                FROM glosses_fts
-                JOIN vocab_glosses g ON g.id = glosses_fts.rowid
-                JOIN vocab_senses s ON s.id = g.sense_id
-                WHERE glosses_fts MATCH ?
-            )
-            SELECT h.entry_id
-            FROM hits h
-            JOIN vocab v ON v.id = h.entry_id
-            WHERE h.hit > 0
-            GROUP BY h.entry_id
-            ORDER BY
-                MIN(h.hit),
-                MIN(h.sp * 1000 + h.gp),
-                MAX(v.score) DESC,
-                h.entry_id
-            LIMIT 30
-        """
+        WITH hits AS (
+            SELECT
+                g.entry_id,
+                s.position AS sp,
+                g.position AS gp,
+                glosses_fts.rank AS rank,
+                instr(
+                    ' ' || replace(replace(replace(replace(replace(
+                        lower(g.definition), ';', ' '), ',', ' '), '(', ' '), ')', ' '), '/', ' ') || ' ',
+                    ' ' || ? || ' '
+                ) AS hit
+            FROM glosses_fts
+            JOIN vocab_glosses g ON g.id = glosses_fts.rowid
+            JOIN vocab_senses s ON s.id = g.sense_id
+            WHERE glosses_fts MATCH ?
+        )
+        SELECT h.entry_id
+        FROM hits h
+        JOIN vocab v ON v.id = h.entry_id
+        GROUP BY h.entry_id
+        ORDER BY
+            MAX(h.hit > 0) DESC,                                  
+            MAX(v.expression NOT GLOB '*[^ァ-ヿ]*'),              -- katakana last
+            MIN(CASE WHEN h.hit > 0 THEN h.hit END),              
+            MIN(CASE WHEN h.hit > 0 THEN h.sp * 1000 + h.gp END), 
+            MIN(h.rank),                                          
+            MAX(v.score) DESC,
+            h.entry_id
+        LIMIT 30
+    """
     with closing(_connect()) as con:
-        rows = [r[0] for r in con.execute(sql, (meaning.lower(), exact))]
-        #show non_exact results after exact results
-        if len(rows) < 30:
-            for r in con.execute(sql, (non_exact,)):
-                if r[0] not in rows:
-                    rows.append(r[0])
-                if len(rows) >= 30:
-                    break
+        rows = [r[0] for r in con.execute(sql, (meaning.lower(), query))]
         return dict_entries(con, rows)
 
 def search_word(text):
@@ -137,9 +134,13 @@ def search_word(text):
         return word_info(text)
     #alphabet to jp (note: alphabet does not mean english)
     else:
+        print(rom_to_kan(text))
         rom = word_info(rom_to_kan(text))
+        rom_katakana = word_info(rom_to_kan(text, katakana=True))
         if rom != []: #there is a match, it is romaji
             return rom
+        elif rom_katakana != []:
+            return rom_katakana
         else: #no exact match, english
             return word_by_meaning(text)
 
