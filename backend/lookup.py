@@ -139,6 +139,7 @@ def kanji_info(kanji):
 
 #lookup by readings (can be on, kun, nanori)
 def kanji_by_reading(reading):
+    print("debug: kanji reading search")
     sql = """
         SELECT DISTINCT k.* from kanji k
         JOIN kanji_readings r ON k.literal = r.literal
@@ -156,11 +157,12 @@ def kanji_by_reading(reading):
 
 #lookup by meanings
 def kanji_by_meaning(meaning): #switch to fts5 maybe? faster
+    print("debug: kanji meaning search")
     with closing(_connect()) as con:
         rows = con.execute("""
             SELECT k.* from kanji k
             JOIN kanji_meanings m ON k.literal = m.literal
-            WHERE m.meaning = ? COLLATE NOCASE
+            WHERE m.meaning LIKE ? COLLATE NOCASE
             GROUP BY k.literal
             ORDER BY k.freq IS NULL, k.freq
         """, (f"%{meaning}%",)).fetchall()
@@ -173,7 +175,6 @@ def search_kanji(text):
             if _is_kanji(char): 
                 print("kanji search")
                 return kanji_info(text)
-        print("kanji reading search")
         return kanji_by_reading(text) #does not contain kanji, hira/kata reading
     #alphabet to jp (note: alphabet does not mean english)
     else:

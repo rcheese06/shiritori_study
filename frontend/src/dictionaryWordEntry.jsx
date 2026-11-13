@@ -6,7 +6,7 @@ export default function WordEntry({ word, reading, senses = [] }) {
         <div className="dict-entry">
             <div className="dict-word-heading">
                 <h4 className="dict-word">{word}</h4>
-                <p className="dict-reading">{reading}</p>
+                <p className="dict-reading">{reading?.length ? reading: 'None'}</p>
             </div>
             <ol className="dict-sense">
                 {senses.map((sense, i) => (

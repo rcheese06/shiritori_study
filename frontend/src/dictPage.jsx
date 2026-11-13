@@ -34,6 +34,7 @@ export default function DictPage() {
             }
 
             const results = await response.json();
+            console.log(results);
             if (!Array.isArray(results)) {
                 throw new Error('The search response was not a list.');
             }
@@ -47,12 +48,12 @@ export default function DictPage() {
     }
 
     return (
-        <main className="dictionary-page">
+        <main className="dict-page">
             <header className="page-header">
                 <h1>Dictionary</h1>
             </header>
-            <div className="dictionary-search">
-                <div className="dictionary-tabs" role="tablist">
+            <div className="dict-search-area">
+                <div className="dict-tabs" role="tablist">
                     <button
                         id="word-search-tab"
                         type="button"
@@ -78,7 +79,7 @@ export default function DictPage() {
                         role="tabpanel"
                     >
                         <form
-                            className="dictionary-search-form"
+                            className="dict-search-form"
                             onSubmit={(event) => searchDictionary(
                                 event,
                                 wordQuery,
@@ -88,13 +89,14 @@ export default function DictPage() {
                             )}
                         >
                             <label htmlFor="word-query">Word or meaning</label>
-                            <div className="dictionary-search-controls">
+                            <div className="dict-search-controls">
                                 <input
+                                    className="dict-search-bar"
                                     id="word-query"
                                     value={wordQuery}
                                     onChange={(event) => setWordQuery(event.target.value)}
                                 />
-                                <button type="submit" disabled={isSearching}>
+                                <button type="submit" className="add-button" disabled={isSearching}>
                                     Search
                                 </button>
                             </div>
@@ -108,7 +110,7 @@ export default function DictPage() {
                                     : 'Search for a Japanese word or an English meaning.'}
                             </p>
                         )}
-                        <div className="dictionary-results">
+                        <div className="dict-results">
                             {/*show multiple entries*/}
                             {wordResults.map((entry, index) => (
                                 <WordEntry
@@ -127,7 +129,7 @@ export default function DictPage() {
                         role="tabpanel"
                     >
                         <form
-                            className="dictionary-search-form"
+                            className="dict-search-form"
                             onSubmit={(event) => searchDictionary(
                                 event,
                                 kanjiQuery,
@@ -137,13 +139,14 @@ export default function DictPage() {
                             )}
                         >
                             <label htmlFor="kanji-query">Kanji</label>
-                            <div className="dictionary-search-controls">
+                            <div className="dict-search-controls">
                                 <input
+                                    className="dict-search-bar"
                                     id="kanji-query"
                                     value={kanjiQuery}
                                     onChange={(event) => setKanjiQuery(event.target.value)}
                                 />
-                                <button type="submit" disabled={isSearching}>
+                                <button type="submit" className="add-button" disabled={isSearching}>
                                     Search
                                 </button>
                             </div>
@@ -154,10 +157,10 @@ export default function DictPage() {
                             <p>
                                 {kanjiSearched
                                     ? 'No matching kanji found.'
-                                    : 'Enter one or more kanji to look them up.'}
+                                    : 'No results found. Enter one or more kanji to look them up.'}
                             </p>
                         )}
-                        <div className="dictionary-results">
+                        <div className="dict-results">
                             {kanjiResults.map((entry) => (
                                 <KanjiEntry
                                     key={entry.literal}
