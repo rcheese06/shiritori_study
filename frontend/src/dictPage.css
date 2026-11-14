@@ -60,18 +60,6 @@
     min-width: 0;
 }
 
-.dict-search-bar {
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-    padding: 10px;
-    border: none;
-    border-radius: 30px;
-    background-color: #FFFFFF50;
-    color: #4c4637;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
 .dict-search-cancel {
     position: absolute;
     right: 0.5rem;

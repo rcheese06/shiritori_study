@@ -3,7 +3,7 @@ export default function DictionarySearchArea({ wordType, query, setQuery, isSear
         <div className="dict-search-controls">
             <div className="dict-search-bar-wrapper">
                 <input
-                    className="dict-search-bar"
+                    className="search-bar"
                     id="word-query"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
@@ -13,7 +13,7 @@ export default function DictionarySearchArea({ wordType, query, setQuery, isSear
                     ✕
                 </button>
             </div>
-            <button type="submit" className="add-button" disabled={isSearching}>
+            <button type="submit" className="primary-button" disabled={isSearching}>
                 Search
             </button>
         </div>

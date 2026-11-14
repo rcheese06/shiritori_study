@@ -15,3 +15,41 @@
 .deck-buttons button {
     background-color: #f0f0f0;
 }
+
+/* create deck page */
+.create-deck-modal {
+
+}
+
+/* add terms page */
+.edit-page {
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-header-buttons {
+    display: flex;
+    flex-direction: row;
+}
+
+.edit-contents {
+    display: flex;
+    flex-direction: row;
+}
+
+.edit-added-terms {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #000000;
+    border-radius: 10px;
+    padding: 50px;
+    margin-bottom: 10px;
+    text-align: left;
+}

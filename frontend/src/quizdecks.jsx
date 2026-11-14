@@ -1,9 +1,26 @@
+import CreateDeck from './quizCreateDeck';
 import './studyPage.css';
 
-export default function QuizDecks({ decks, onStudy, onSettings }) {
+export default function QuizDecks({decks}) {
     function onAddDeck() {
-        // Implement the logic to add a new deck
-        console.log('Add Deck button clicked');
+        <CreateDeck
+            name={deckName}
+            setName={setName}
+            />
+    }
+    function onStudy() {
+        
+    }
+    function onAddTerms() {
+        <EditDeck
+            name={deckName}
+        />
+    }
+    function onSettings() {
+        <QuizDecksSettings
+            deck={selectedDeck}
+            onBackToHome={() => setPage('decks')}
+            />
     }
 
     return (
@@ -25,6 +42,9 @@ export default function QuizDecks({ decks, onStudy, onSettings }) {
                             <button onClick={() => onStudy(deck)}>
                                 Study
                             </button>
+                            <button onClick={() => onAddTerms(deck)}>
+                                Add Terms
+                            </button>
                             <button onClick={() => onSettings(deck)}>
                                 Settings
                             </button>
@@ -33,7 +53,7 @@ export default function QuizDecks({ decks, onStudy, onSettings }) {
                 ))}
             </ul>
             
-            <button className="add-button" onClick={() => onAddDeck()}>Add Deck</button>
+            <button className="primary-button" onClick={() => onAddDeck()}>Add Deck</button>
         </div>
     );
 }

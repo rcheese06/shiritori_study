@@ -39,9 +39,34 @@
     transition: background-color 0.3s ease;
 }
 
-.add-button {
+.search-bar {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 10px;
+    border: none;
+    border-radius: 30px;
+    background-color: #FFFFFF50;
+    color: #4c4637;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.primary-button {
     background-color: #F2C94C;
     border: none;
+    color:#4c4637;
+    padding: 10px 20px;
+    border-radius: 500px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.secondary-button {
+    background-color: transparent;
+    border: 1px solid #4c4637;
     color:#4c4637;
     padding: 10px 20px;
     border-radius: 500px;

@@ -13,23 +13,23 @@ function StudyPage() {
         const controller = new AbortController();
 
         async function loadDecks() {
-        try {
-            const response = await fetch('/api/deck', { signal: controller.signal });
-            if (!response.ok) {
-                throw new Error(`Failed to load decks (${response.status})`);
-            }
+            try {
+                const response = await fetch('/api/deck', { signal: controller.signal });
+                if (!response.ok) {
+                    throw new Error(`Failed to load decks (${response.status})`);
+                }
 
-            const data = await response.json();
-            if (!Array.isArray(data)) {
-                throw new Error('The deck response was not a list');
-            }
+                const data = await response.json();
+                if (!Array.isArray(data)) {
+                    throw new Error('The deck response was not a list');
+                }
 
-            setDecks(data);
-        } catch (fetchError) {
-            if (!controller.signal.aborted) {
-                setError(fetchError.message);
+                setDecks(data);
+            } catch (fetchError) {
+                if (!controller.signal.aborted) {
+                    setError(fetchError.message);
+                }
             }
-        }
         }
 
         loadDecks();
