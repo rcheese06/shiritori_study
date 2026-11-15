@@ -2,7 +2,6 @@ import { useState } from 'react';
 import './App.css';
 import DictPage from './dictPage.jsx';
 import StudyPage from './studyPage.jsx';
-import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
     const [activePage, setActivePage] = useState('study');
