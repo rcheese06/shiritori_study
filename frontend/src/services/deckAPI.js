@@ -46,6 +46,14 @@ export async function deleteDeck(id) {
     if (!res.ok) throw new Error('Failed to delete deck (${res.status}).');
 }
 
+export async function getDeckWords(id) {
+    const res = await fetch(`${BASE}/${id}/words`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    });
+    if (!res.ok) throw new Error('Failed to add word (${res.status}).');
+}
+
 export async function addWord(id, word) {
     const res = await fetch(`${BASE}/${id}/words`, {
         method: 'POST',
