@@ -12,6 +12,7 @@ router = APIRouter()
 
 class DeckCreateInput(BaseModel):
     name: str = Field(min_length=1, max_length=100)
+    deck_type: str
 
 class QuestionSettingsInput(BaseModel):
     kanji_to_kana: Optional[bool] = None
@@ -45,14 +46,14 @@ def create_deck(deck: DeckCreateInput):
     with closing(connect_db()) as con:
         with con:
             cursor = con.execute(
-                "INSERT INTO decks (name) VALUES (?)",
-                (deck.name,),
+                "INSERT INTO decks (name) VALUES (?,?)",
+                (deck.name,deck.deck_type),
             )
-            return {"id": cursor.lastrowid, "name": deck.name}
+            return {"id": cursor.lastrowid, "name": deck.name, "type": deck.deck_deck_type}
 
 
 @router.get("/deck")
-def get_deck_list():
+def list_decks():
     with closing(connect_db()) as con:
         rows = con.execute("SELECT id, name FROM decks ORDER BY id").fetchall()
         return [dict(row) for row in rows]

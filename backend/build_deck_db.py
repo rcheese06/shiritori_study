@@ -11,6 +11,7 @@ def build_deck_db():
         CREATE TABLE IF NOT EXISTS decks (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL UNIQUE,
+            type TEXT NOT NULL,  --one deck will have only vocab or only kanji
             question_settings TEXT NOT NULL DEFAULT '{}',
             session_size INTEGER NOT NULL DEFAULT 20
         );
@@ -19,7 +20,6 @@ def build_deck_db():
             id TEXT NOT NULL, --seq id for word, kanji for kanji
             deck_id INTEGER,
             word TEXT NOT NULL,
-            type TEXT NOT NULL,
             FOREIGN KEY (deck_id) REFERENCES decks (id) ON DELETE CASCADE,
             UNIQUE (id, deck_id)
         );
