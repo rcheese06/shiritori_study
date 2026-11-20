@@ -12,7 +12,7 @@ router = APIRouter()
 
 class DeckCreateInput(BaseModel):
     name: str = Field(min_length=1, max_length=100)
-    deck_type: str
+    deck_type: str = Field(default="vocab", alias="type", min_length=1)
 
 class QuestionSettingsInput(BaseModel):
     kanji_to_kana: Optional[bool] = None
@@ -44,12 +44,15 @@ def connect_db():
 @router.post("/deck")
 def create_deck(deck: DeckCreateInput):
     with closing(connect_db()) as con:
-        with con:
+        try:
             cursor = con.execute(
-                "INSERT INTO decks (name) VALUES (?,?)",
+                "INSERT INTO decks (name, type) VALUES (?, ?)",
                 (deck.name,deck.deck_type),
             )
-            return {"id": cursor.lastrowid, "name": deck.name, "type": deck.deck_deck_type}
+            con.commit()
+        except sqlite3.IntegrityError:
+            raise HTTPException(status_code=409, detail="A deck with that name already exists")
+        return {"id": cursor.lastrowid, "name": deck.name, "type": deck.deck_type}
 
 
 @router.get("/deck")

@@ -17,8 +17,8 @@ export default function CreateDeck({onSubmit, onClose}) {
         setSaving(true);
         try {
             await onSubmit(deckName);
-        } catch {
-            setError('Could not create deck. Please try again.');
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Could not create deck. Please try again.');
             setSaving(false);
         }
     }

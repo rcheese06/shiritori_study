@@ -14,7 +14,7 @@ export default function QuizDecks() {
     async function onAddDeck(name) {
         const deck = await addDeck(name);
         setIsModalOpen(false);
-        navigate(`/study/${deck.id}/add-deck`);
+        navigate(`/study/${deck.id}/add-terms`);
     }
 
     if (loading) return <p>Loading…</p>;
