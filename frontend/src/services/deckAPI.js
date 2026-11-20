@@ -17,9 +17,9 @@ export async function listDecks() {
     });
     if (!res.ok) throw new Error('Failed to load decks (${res.status}).');
 
-    const deckList = await res.json();
-    if (!Array.isArray(deckList)) throw new Error('The deck response was not a list');
-    return res.json();
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error('The deck response was not a list');
+    return data;
 }
 
 export async function getDeck(id) {

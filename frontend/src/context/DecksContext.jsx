@@ -18,6 +18,7 @@ export function DecksProvider({children}) {
             const data = await deckAPI.listDecks();
             if (!cancelled) setDecks(data);
         } catch (err) {
+            console.error('listDecks failed:', err);
             if (!cancelled) setError(err);
         } finally {
             if (!cancelled) setLoading(false);

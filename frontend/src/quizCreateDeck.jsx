@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 export default function CreateDeck({onSubmit, onClose}) {
     const [name, setName] = useState('');
     const [error, setError] = useState(null);
