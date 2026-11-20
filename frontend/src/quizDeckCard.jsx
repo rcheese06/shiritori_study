@@ -18,7 +18,7 @@ export default function DeckCard({deck}) {
             <h2>{deck.name}</h2>
             //x out of y cards need to be studied
             <span className="deck-term-numbers">
-                {deck.terms.length} cards in deck
+                {/*deck.terms.length*/} cards in deck
             </span>
         </div>
         <div className="deck-buttons">
