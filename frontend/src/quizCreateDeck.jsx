@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import './studyPage.css';
 
 export default function CreateDeck({onSubmit, onClose}) {
     const [name, setName] = useState('');
@@ -17,7 +18,7 @@ export default function CreateDeck({onSubmit, onClose}) {
         try {
             await onSubmit(deckName);
         } catch {
-            setError('Could not create the deck. Please try again.');
+            setError('Could not create deck. Please try again.');
             setSaving(false);
         }
     }
@@ -25,7 +26,7 @@ export default function CreateDeck({onSubmit, onClose}) {
     return (
         <div className="create-deck-modal">
             <form onSubmit={handleSubmit}>
-                <button type="button" onclick={onClose}>✕</button>
+                <button className="cancel-button" type="button" onClick={onClose}>✕</button>
                 <input
                     className="search-bar"
                     id="deck-name"
@@ -33,6 +34,7 @@ export default function CreateDeck({onSubmit, onClose}) {
                     onChange={(event) => setName(event.target.value)}
                     placeholder={`Enter name...`}
                 />
+
                 <button type="submit" className="primary-button">Create</button>
                 {error && <p className="form-error">{error}</p>}
             </form>

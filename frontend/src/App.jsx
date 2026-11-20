@@ -23,8 +23,8 @@ function App() {
           </Routes>
         </div>
         <nav className="page-switcher">
-          <NavLink to="/study">Decks</NavLink>
-          <NavLink to="/dictionary">Dictionary</NavLink>
+          <NavLink to="/study" className="page-switcher-item">Decks</NavLink>
+          <NavLink to="/dictionary" className="page-switcher-item">Dictionary</NavLink>
         </nav>
       </div>
     </DecksProvider>

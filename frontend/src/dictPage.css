@@ -60,18 +60,6 @@
     min-width: 0;
 }
 
-.dict-search-cancel {
-    position: absolute;
-    right: 0.5rem;
-    align-content: center;
-    justify-content: center;
-    background-color: #00000000;
-    border: none;
-    color:#4c4637;
-    cursor: pointer;
-
-}
-
 /* Entries */
 .dict-entry {
     border: 1px solid #000000;

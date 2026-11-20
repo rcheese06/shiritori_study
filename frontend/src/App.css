@@ -28,7 +28,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.page-switcher button {
+.page-switcher-item {
     background-color: #ffffff00;
     border: none;
     padding: 10px 20px;
@@ -49,6 +49,17 @@
     background-color: #FFFFFF50;
     color: #4c4637;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.cancel-button {
+    position: absolute;
+    right: 0.5rem;
+    align-content: center;
+    justify-content: center;
+    background-color: #00000000;
+    border: none;
+    color:#4c4637;
+    cursor: pointer;
 }
 
 .primary-button {

@@ -9,7 +9,7 @@ export default function DictionarySearchArea({ wordType, query, setQuery, isSear
                     onChange={(event) => setQuery(event.target.value)}
                     placeholder={`Search for ${wordType}...`}
                 />
-                <button className="dict-search-cancel" type="button" onClick={() => setQuery("") }>
+                <button className="cancel-button" type="button" onClick={() => setQuery("") }>
                     ✕
                 </button>
             </div>
