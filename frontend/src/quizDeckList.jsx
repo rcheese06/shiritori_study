@@ -1,14 +1,24 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDecks } from './hooks/useDecks';
 import CreateDeck from './quizCreateDeck';
 import DeckCard from './quizDeckCard';
 import './studyPage.css';
 
-export default function QuizDecks({decks}) {
-    function onAddDeck() {
-        <CreateDeck
-            name={deckName}
-            setName={setName}
-            />
+export default function QuizDecks() {
+    const { decks, loading, error, addDeck } = useDecks();
+    console.log({ decks, loading, error });
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const navigate = useNavigate();
+
+    async function onAddDeck(name) {
+        const deck = await addDeck(name);
+        setIsModalOpen(false);
+        navigate(`/study/${deck.id}/add-deck`);
     }
+
+    if (loading) return <p>Loading…</p>;
+    if (error) return <p>Couldn't load your decks.</p>;
 
     return (
         <div className="quiz-page">
@@ -18,15 +28,19 @@ export default function QuizDecks({decks}) {
             <ul className="deck-list">
                 {decks.map((deck) => (
                     <li key={deck.id}>
-                        <DeckCard
-                            id={deck.id}
-                            deckName = {deck.name}
-                            />
+                        <DeckCard deck={deck}/>
                     </li>
                 ))}
             </ul>
             
-            <button className="primary-button" onClick={() => onAddDeck()}>+</button>
+            <button className="primary-button" onClick={() => setIsModalOpen(true)}>+</button>
+
+            {isModalOpen && (
+                <CreateDeck
+                    onSubmit={onAddDeck}
+                    onClose={() => setIsModalOpen(false)}
+                />
+            )}
         </div>
     );
 }
