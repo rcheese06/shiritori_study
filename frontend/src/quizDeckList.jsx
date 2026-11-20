@@ -9,20 +9,6 @@ export default function QuizDecks({decks}) {
             setName={setName}
             />
     }
-    function onStudy() {
-        
-    }
-    function onAddTerms() {
-        <EditDeck
-            name={deckName}
-        />
-    }
-    function onSettings() {
-        <QuizDecksSettings
-            deck={selectedDeck}
-            onBackToHome={() => setPage('decks')}
-            />
-    }
 
     return (
         <div className="quiz-page">

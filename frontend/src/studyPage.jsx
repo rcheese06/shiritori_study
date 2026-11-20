@@ -1,30 +1,19 @@
 import { useEffect, useState } from 'react';
 import QuizDecks from './quizDeckList.jsx';
-import QuizDecksSettings from './quizDeckSettings.jsx';
+import CreateDeck from './quizCreateDeck.jsx';
 import './studyPage.css';
 
 function StudyPage() {
-    const [selectedDeck, setSelectedDeck] = useState(null);
-    const [page, setPage] = useState('decks');
+    const {decks, loading, error} = useDecks();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    if (loading) return <Spinner />;
+    if (error) return <ErrorMessage message="Couldn't load your decks." />;
 
     return (
         <main>
-        {error && <p role="alert">{error}</p>}
-        {page === 'decks' && (
-            <QuizDecks
-            decks={decks}
-            onSettings={(deck) => {
-                setSelectedDeck(deck);
-                setPage('settings');
-            }}
-            />
-        )}
-        {page === 'settings' && selectedDeck && (
-            <QuizDecksSettings
-            deck={selectedDeck}
-            onBackToHome={() => setPage('decks')}
-            />
-        )}
+            <QuizDecks decks={decks} onAddClick={() => setIsModalOpen(true)} />
+            <CreateDeck isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </main>
     );
 }

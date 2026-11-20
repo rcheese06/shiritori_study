@@ -34,7 +34,7 @@
     align-items: center;
 }
 
-.edit-header-buttons {
+.button-pair {
     display: flex;
     flex-direction: row;
 }

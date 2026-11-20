@@ -1,22 +1,32 @@
-export default function DeckCard(id, deckName) {
+import useNavigate from 'react-router-dom';
+
+export default function DeckCard({deck}) {
+    const navigate = useNavigate();
+
+    function onStudy() {
+        navigate(`/study/${deck.id}`);
+    }
+    function onAddTerms() {
+        navigate(`/study/${deck.id}/add-terms`);
+    }
+    function onSettings() {
+        navigate(`/study/${deck.id}/settings`);
+    }
+
     <div className="deck-card">
         <div className="deck-info">
-            <h2>{deckName}</h2>
-            //deck size - check ltr
+            <h2>{deck.name}</h2>
+            //x out of y cards need to be studied
             <span className="deck-term-numbers">
-                {count} {count === 1 ? 'card' : 'cards'} per session · {deck.cards.length} in deck
+                {deck.terms.length} cards in deck
             </span>
         </div>
         <div className="deck-buttons">
-            <button onClick={() => onStudy(deck)}>
-                Study
-            </button>
-            <button onClick={() => onAddTerms(deck)}>
-                Add Terms
-            </button>
-            <button onClick={() => onSettings(deck)}>
-                Settings
-            </button>
+            <button className="primary-button" onClick={onStudy}>Study</button>
+            <div className="button-pair">
+                <button onClick={onAddTerms}>Add Terms</button>
+                <button onClick={onSettings}>Settings</button>
+            </div>
         </div>
     </div>
 }

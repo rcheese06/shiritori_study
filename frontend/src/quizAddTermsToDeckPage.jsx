@@ -5,7 +5,7 @@ export default function EditDeck(name, size, query, setQuery, isSearching) {
             <div className="edit-header">
                 <h3>Deck Name: {name}</h3>
                 <p>{size} terms added</p>
-                <div className="edit-header-buttons">
+                <div className="button-pair">
                     <button className="primary-button" type="submit">Save Changes</button>
                     <button className="secondary-button" type="reset">Discard Changes</button>
                 </div>
