@@ -19,6 +19,7 @@ export async function listDecks() {
 
     const deckList = await res.json();
     if (!Array.isArray(deckList)) throw new Error('The deck response was not a list');
+    return res.json();
 }
 
 export async function getDeck(id) {
@@ -27,6 +28,7 @@ export async function getDeck(id) {
         headers: { 'Content-Type': 'application/json' },
     });
     if (!res.ok) throw new Error('Failed to get deck (${res.status}).');
+    return res.json();
 }
 
 export async function editDeck(id, changes) {
@@ -36,6 +38,7 @@ export async function editDeck(id, changes) {
         body: JSON.stringify({changes}), //new name, question settings and size are all in one json
     });
     if (!res.ok) throw new Error('Failed to edit deck (${res.status}).');
+    return res.json();
 }
 
 export async function deleteDeck(id) {
@@ -44,6 +47,7 @@ export async function deleteDeck(id) {
         headers: { 'Content-Type': 'application/json' },
     });
     if (!res.ok) throw new Error('Failed to delete deck (${res.status}).');
+    return res.json();
 }
 
 export async function getDeckWords(id) {
@@ -52,6 +56,7 @@ export async function getDeckWords(id) {
         headers: { 'Content-Type': 'application/json' },
     });
     if (!res.ok) throw new Error('Failed to add word (${res.status}).');
+    return res.json();
 }
 
 export async function addWord(id, word) {
@@ -61,6 +66,7 @@ export async function addWord(id, word) {
         body: JSON.stringify({word}),
     });
     if (!res.ok) throw new Error('Failed to add word (${res.status}).');
+    return res.json();
 }
 
 export async function deleteWord(id, word) {
@@ -70,4 +76,5 @@ export async function deleteWord(id, word) {
         body: JSON.stringify({word}),
     });
     if (!res.ok) throw new Error('Failed to delete word (${res.status}).');
+    return res.json();
 }
