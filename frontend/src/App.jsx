@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import DictPage from './dictPage.jsx';
-import DeckStudyPage from './'; //here
+//import DeckStudyPage from './'; //here
 import EditDeck from './quizAddTermsToDeckPage.jsx';
 import QuizDecksSettings from './quizDeckSettingsPage.jsx';
 import StudyPage from './studyPage.jsx';
@@ -16,7 +16,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/study" replace />} />
             <Route path="/study" element={<StudyPage />} />
-            <Route path="/study/:deckId" element={<DeckStudyPage />} /> {/*quizCard + quizAnswer (create this)*/}
+            {/*<Route path="/study/:deckId" element={<DeckStudyPage />} />*/} {/*quizCard + quizAnswer (create this)*/}
             <Route path="/study/:deckId/add-terms" element={<EditDeck />} /> 
             <Route path="/study/:deckId/settings" element={<QuizDecksSettings />} />
             <Route path="/dictionary" element={<DictPage />} />
