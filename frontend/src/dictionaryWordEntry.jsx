@@ -4,10 +4,14 @@ import './dictPage.css';
 export default function WordEntry({ word, reading, senses = [] }) {
     return (
         <div className="dict-entry">
-            <div className="dict-word-heading">
-                <h4 className="dict-word">{word}</h4>
-                <p className="dict-reading">{reading?.length ? reading: 'None'}</p>
+            <div className="dict-heading">
+                <div className="dict-word-heading">
+                    <h4 className="dict-word">{word}</h4>
+                    <p className="dict-reading">{reading?.length ? reading: 'None'}</p>
+                </div>
+                <AddToDeck word={word} />
             </div>
+            
             <ol className="dict-sense">
                 {senses.map((sense, i) => (
                     <li key={i} >
@@ -28,7 +32,6 @@ export default function WordEntry({ word, reading, senses = [] }) {
                     </li>
                 ))}
             </ol>
-            <AddToDeck word={word} />
         </div>
     );
 }
