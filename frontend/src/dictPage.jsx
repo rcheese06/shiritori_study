@@ -1,3 +1,4 @@
+import DictSearch from './dictSearchArea.jsx'
 import './dictPage.css';
 
 export default function DictPage() {
@@ -7,7 +8,7 @@ export default function DictPage() {
                 <h1>Dictionary</h1>
             </header>        
             {/* search bar and search results */}
-            <DictionarySearch
+            <DictSearch
                 renderAction={({ entry, kind, entryId }) => (
                     //to-do: setModal
                     <button onClick={() => setModal({ entry, kind, entryId })}>
@@ -16,9 +17,9 @@ export default function DictPage() {
                 )}
             />
             {/* add word to deck modal */}
-            {modalEntry && <AddToDecksModal
+            {/*modalEntry && <AddToDecksModal
             
-            />}
+            />*/}
         </main>
     );
 }

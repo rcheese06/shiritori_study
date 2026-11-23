@@ -5,7 +5,18 @@ import WordEntry from './dictionaryWordEntry.jsx';
 import DictionarySearchArea from './dictSearchBar.jsx';
 import { useDictionarySearch } from './hooks/useDictSearch.js';
 
-export default function DictSearch(fixedWordType, renderAction) {
+const errorMessages = {
+    vocab: {
+        empty: 'Search for a Japanese word by its reading or English meaning.',
+        none:  'No matching words found.',
+    },
+    kanji: {
+        empty: 'Search for a kanji by its character, reading or meaning.',
+        none:  'No matching kanji found.',
+    },
+};
+
+export default function DictSearch({fixedWordType, renderAction}) {
     //selected type is a kind of word type
     const [selectedType, setSelectedType] = useState('vocab');
     const [query, setQuery] = useState('');
@@ -20,17 +31,7 @@ export default function DictSearch(fixedWordType, renderAction) {
     const active = wordType === 'vocab' ? vocabSearch : kanjiSearch;
     const { results, error, isSearching, searched, search } = active;
 
-    const errorMessages = {
-        vocab: {
-            empty: 'Search for a Japanese word by its reading or English meaning.',
-            none:  'No matching words found.',
-        },
-        kanji: {
-            empty: 'Search for a kanji by its character, reading or meaning.',
-            none:  'No matching kanji found.',
-        },
-    };
-
+    console.log(wordType, Object.keys(errorMessages));
     function handleSubmit(event) {
         event.preventDefault();
         search(query);
@@ -75,7 +76,8 @@ export default function DictSearch(fixedWordType, renderAction) {
             {/*show multiple entries*/}
             {results.map((entry, index) => {
                 const kind = wordType === 'vocab' ? 'word' : 'kanji';
-                const entryId = str(entry.sequence_id ?? entry.literal);
+                const entryId = entry.sequence_id ?? entry.literal;
+                console.log(entryId);
 
                 return (
                     <div key={`${entryId}-${index}`}>
