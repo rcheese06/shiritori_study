@@ -1,4 +1,5 @@
 import {useNavigate} from 'react-router-dom';
+import './studyPage.css';
 
 export default function DeckCard({deck}) {
     const navigate = useNavigate();
