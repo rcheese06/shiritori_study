@@ -51,15 +51,18 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.cancel-button {
-    position: absolute;
-    right: 0.5rem;
+.icon-button {
     align-content: center;
     justify-content: center;
-    background-color: #00000000;
+    background-color: transparent;
     border: none;
     color:#4c4637;
     cursor: pointer;
+}
+
+.cancel-button {
+    position: absolute;
+    right: 0.5rem;
 }
 
 .primary-button {
@@ -86,4 +89,9 @@
     justify-content: center;
     cursor: pointer;
     transition: background-color 0.3s ease;
+}
+
+.button-pair {
+    display: flex;
+    flex-direction: row;
 }

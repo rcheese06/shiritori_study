@@ -3,7 +3,10 @@ import './studyPage.css';
 
 function StudyPage() {
     return (
-        <main>
+        <main className="quiz-page">
+            <header className="page-header">
+                <h1>Study Decks</h1>
+            </header>
             <QuizDecks />
         </main>
     );

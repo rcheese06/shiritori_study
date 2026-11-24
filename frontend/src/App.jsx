@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import './App.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import DictPage from './dictPage.jsx';
 //import DeckStudyPage from './'; //here
 import EditDeck from './quizAddTermsToDeckPage.jsx';

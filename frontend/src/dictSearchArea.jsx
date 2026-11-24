@@ -39,20 +39,22 @@ export default function DictSearch({fixedWordType, renderAction}) {
 
     return (
         <div className="dict-search-area">
-            <div className="dict-tabs">
-                <button
-                    type="button"
-                    onClick={() => setSelectedType('vocab')}
-                >
-                    Vocab
-                </button>
-                <button
-                    type="button"
-                    onClick={() => setSelectedType('kanji')}
-                >
-                    Kanji
-                </button>
-            </div>
+            {!fixedWordType && (
+                <div className="dict-tabs">
+                    <button
+                        type="button"
+                        onClick={() => setSelectedType('vocab')}
+                    >
+                        Vocab
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setSelectedType('kanji')}
+                    >
+                        Kanji
+                    </button>
+                </div>
+            )}
             
             <form
                 className="dict-search-form"

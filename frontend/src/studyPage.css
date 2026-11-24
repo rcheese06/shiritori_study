@@ -7,21 +7,33 @@
     padding: 1rem;
 }
 
+/* deck cards */
+.deck-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    padding: 20px;
+    background-color: #00000010;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.deck-info {
+    display: flex;
+    flex-direction: column;
+    padding: 0px;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.deck-info h5 {
+    margin: 0;
+}
+
 .deck-buttons {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem 1rem;
-    
-}
-.deck-buttons button {
-    background-color: #f0f0f0;
-}
-
-/* deck cards */
-.deck-card {
-
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    align-items: center;    
 }
 
 /* create deck page */
@@ -70,11 +82,6 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-}
-
-.button-pair {
-    display: flex;
-    flex-direction: row;
 }
 
 .edit-contents {

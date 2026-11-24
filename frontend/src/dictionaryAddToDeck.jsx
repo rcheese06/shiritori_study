@@ -69,7 +69,7 @@ export default function AddToDeck({ word }) {
                                 type="button"
                                 onClick={() => setIsModalOpen(false)}
                                 disabled={isSaving}
-                                className="cancel-button"
+                                className="icon-button cancel-button"
                             >
                                 ✕
                             </button>

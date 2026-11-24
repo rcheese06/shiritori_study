@@ -21,14 +21,11 @@ export default function QuizDecks() {
     if (error) return <p>Couldn't load your decks.</p>;
 
     return (
-        <div className="quiz-page">
-            <header className="page-header">
-                <h1>Study Decks</h1>
-            </header>
+        <div>
             <ul className="deck-list">
                 {decks.map((deck) => (
                     <li key={deck.id}>
-                        <DeckCard deck={deck}/>
+                        <DeckCard deck={deck} />
                     </li>
                 ))}
             </ul>
