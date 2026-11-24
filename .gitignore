@@ -25,4 +25,12 @@ dist-ssr
 
 #dictionary database
 backend/dictionary.db
-*.dbbackend/dictionary.db
+*.db
+
+#deck database
+backend/decks.db
+*.db
+
+#pyc files
+__pycache__/
+*.pyc
