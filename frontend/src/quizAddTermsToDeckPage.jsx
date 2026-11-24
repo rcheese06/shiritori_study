@@ -1,36 +1,61 @@
-export default function EditDeck(name, size, query, setQuery, isSearching) {
-    
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDecks, useCurrentDeck } from './hooks/useDecks';
+import DictSearch from "./dictSearchArea.jsx"
+import './studyPage.css';
+import './dictPage.css';
+
+export default function EditDeck({wordType}) {
+    const {deck, loading, error } = useCurrentDeck();
+    const { addTerm, removeTerm } = useDecks();
+    const navigate = useNavigate();
+
+    const terms = deck?.terms ?? [];
+
+    if (loading) return <p>Loading…</p>;
+    if (error) return <p>Couldn't load your deck.</p>;
+    if (!deck) return <p>Deck not found.</p>;
+
+    function onBack() {
+        navigate(`/study`);
+    }
+
     return (
         <div className="edit-page">
+            {/* top half of page */}
+            <button className="back-button" onClick={onBack}>Back</button>
             <div className="edit-header">
-                <h3>Deck Name: {name}</h3>
-                <p>{size} terms added</p>
+                <h3>Deck Name: {deck.name}</h3>
+                <p>{/*size*/} terms added</p>
                 <div className="button-pair">
                     <button className="primary-button" type="submit">Save Changes</button>
                     <button className="secondary-button" type="reset">Discard Changes</button>
                 </div>
             </div>
+
+            {/* buttom half of page */}
             <div className="edit-contents">
-                <div className="dict-search-controls">
-                    <div className="dict-search-bar-wrapper">
-                        <input
-                            className="search-bar"
-                            id="word-query"
-                            value={query}
-                            onChange={(event) => setQuery(event.target.value)}
-                            placeholder={`Search for ${wordType}...`}
-                        />
-                        <button className="dict-search-cancel" type="button" onClick={() => setQuery("") }>
-                            ✕
-                        </button>
-                    </div>
-                    <button type="submit" className="primary-button" disabled={isSearching}>
-                        Search
-                    </button>
-                </div>
-
+                {/* add new terms */}
+                <DictSearch 
+                    fixedWordType={wordType}
+                    renderAction={({ kind, entryId }) => (
+                        <button onClick={() => addTerm(deck.id, kind, entryId)}>Add</button>
+                    )}
+                />
+               
+                {/* list of existing terms */}
                 <div className="edit-added-terms">
-
+                    {terms.length === 0 ? (
+                        <p>This deck has no terms yet.</p>
+                    ) : (
+                        <ul>
+                        {terms.map((term) => (
+                            <li key={term.id}>
+                            {term.entryId}
+                            </li>
+                        ))}
+                        </ul>
+                    )}
                 </div>
             </div>
         </div>

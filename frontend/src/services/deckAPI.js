@@ -15,7 +15,7 @@ export async function listDecks() {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
     });
-    if (!res.ok) throw new Error('Failed to load decks (${res.status}).');
+    if (!res.ok) throw new Error(`Failed to load decks (${res.status}).`);
 
     const data = await res.json();
     if (!Array.isArray(data)) throw new Error('The deck response was not a list');
@@ -27,7 +27,7 @@ export async function getDeck(id) {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
     });
-    if (!res.ok) throw new Error('Failed to get deck (${res.status}).');
+    if (!res.ok) throw new Error(`Failed to get deck (${res.status}).`);
     return res.json();
 }
 
@@ -37,7 +37,7 @@ export async function editDeck(id, changes) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({changes}), //new name, question settings and size are all in one json
     });
-    if (!res.ok) throw new Error('Failed to edit deck (${res.status}).');
+    if (!res.ok) throw new Error(`Failed to edit deck (${res.status}).`);
     return res.json();
 }
 
@@ -46,7 +46,7 @@ export async function deleteDeck(id) {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
     });
-    if (!res.ok) throw new Error('Failed to delete deck (${res.status}).');
+    if (!res.ok) throw new Error(`Failed to delete deck (${res.status}).`);
     return res.json();
 }
 
@@ -55,7 +55,7 @@ export async function getDeckWords(id) {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
     });
-    if (!res.ok) throw new Error('Failed to add word (${res.status}).');
+    if (!res.ok) throw new Error(`Failed to add word (${res.status}).`);
     return res.json();
 }
 
@@ -65,7 +65,7 @@ export async function addWord(id, word) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({word}),
     });
-    if (!res.ok) throw new Error('Failed to add word (${res.status}).');
+    if (!res.ok) throw new Error(`Failed to add word (${res.status}).`);
     return res.json();
 }
 
@@ -75,6 +75,6 @@ export async function deleteWord(id, word) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({word}),
     });
-    if (!res.ok) throw new Error('Failed to delete word (${res.status}).');
+    if (!res.ok) throw new Error(`Failed to delete word (${res.status}).`);
     return res.json();
 }

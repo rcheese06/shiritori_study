@@ -30,7 +30,8 @@ export function DecksProvider({children}) {
     }, []);  
 
     function updateDeck(saved) {
-        setDecks(prev => prev.map(d => (d.id === saved.id ? saved : d)));
+        //setDecks(prev => prev.map(d => (d.id === saved.id ? saved : d))); //replace
+        setDecks(prev => prev.map(d => (d.id === saved.id ? { ...d, ...saved } : d))); //merge
     }
 
     async function addDeck(name, type) {
@@ -45,9 +46,15 @@ export function DecksProvider({children}) {
         return saved
     }
 
-    async function deleteDeck(id, word) {
+    async function deleteDeck(id) {
         await deckAPI.deleteDeck(id);
         setDecks(prev => prev.filter(d => d.id !== id));
+    }
+
+    async function getDeck(id) {
+        const deck = await deckAPI.getDeck(id);
+        updateDeck(deck);
+        return deck
     }
 
     async function addWord(id, word) {
@@ -62,7 +69,7 @@ export function DecksProvider({children}) {
         return saved
     }
 
-  const value = {decks, loading, error, addDeck, editDeck, deleteDeck, addWord, deleteWord};
+  const value = {decks, loading, error, addDeck, editDeck, deleteDeck, getDeck, addWord, deleteWord};
 
   return <DecksContext.Provider value={value}>{children}</DecksContext.Provider>;
 }

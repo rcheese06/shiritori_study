@@ -34,6 +34,9 @@ DEFAULT_QUESTION_SETTINGS = {
     "jp_to_meaning": True,
     "meaning_to_jp": True,
 }
+def load_question_settings(raw):
+    stored = json.loads(raw) if raw else {}
+    return {k: stored.get(k, default) for k, default in DEFAULT_QUESTION_SETTINGS.items()}
 
 def connect_db():
     con = sqlite3.connect(DB_PATH)
@@ -65,12 +68,24 @@ def list_decks():
 def get_deck(deck_id: int):
     with closing(connect_db()) as con:
         deck = con.execute(
-            "SELECT id FROM decks WHERE id = ?", (deck_id,)
+            "SELECT * FROM decks WHERE id = ?", (deck_id,)
         ).fetchone()
         if deck is None:
             raise HTTPException(status_code=404, detail="Deck not found")
+
+        terms = con.execute(
+            "SELECT id, deck_id, word FROM deck_words WHERE deck_id = ? ORDER BY id",
+            (deck_id,),
+        ).fetchall()
         
-        #continue
+    return {
+        "id": deck_id,
+        "name": deck["name"],
+        "settings": load_question_settings(deck["question_settings"]),
+        "session_size": deck["session_size"],
+        "terms": [{"id": t["id"], "deck_id": t["deck_id"], "word": t["word"]} for t in terms],
+        "length": len(terms),
+    }
 
 @router.patch("/deck/{deck_id}")
 def edit_deck(deck_id: int, item: DeckEditInput):
@@ -103,7 +118,7 @@ def edit_deck(deck_id: int, item: DeckEditInput):
                 raise HTTPException(
                     status_code=400,
                     detail="At least one question type must be enabled",
-                )
+                )   
         
         #update session size
         if item.session_size is not None:
@@ -144,20 +159,20 @@ def add_word(deck_id: int, item: WordInput):
     return {"deck_id": deck_id, "word": item.word}
 
 
-@router.get("/deck/{deck_id}/words")
-def get_deck_words(deck_id: int):
-    with closing(connect_db()) as con:
-        deck = con.execute(
-            "SELECT id FROM decks WHERE id = ?", (deck_id,)
-        ).fetchone()
-        if deck is None:
-            raise HTTPException(status_code=404, detail="Deck not found")
-
-        rows = con.execute(
-            "SELECT word FROM deck_words WHERE deck_id = ? ORDER BY word",
-            (deck_id,),
-        ).fetchall()
-        return [row["word"] for row in rows]
+#@router.get("/deck/{deck_id}/words")
+#def get_deck_words(deck_id: int):
+#    with closing(connect_db()) as con:
+#        deck = con.execute(
+#            "SELECT id FROM decks WHERE id = ?", (deck_id,)
+#        ).fetchone()
+#        if deck is None:
+#            raise HTTPException(status_code=404, detail="Deck not found")
+#
+#        rows = con.execute(
+#            "SELECT id, deck_id, word FROM deck_words WHERE deck_id = ? ORDER BY word",
+#            (deck_id,),
+#        ).fetchall()
+#        return [{"id": row["id"], "deck_id": row["deck_id"], "word": row["word"]} for row in rows]
 
 
 @router.delete("/deck/{deck_id}/words")
