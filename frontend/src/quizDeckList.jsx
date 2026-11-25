@@ -28,10 +28,11 @@ export default function QuizDecks() {
                         <DeckCard deck={deck} />
                     </li>
                 ))}
+                <div className="add-deck-button-wrapper">
+                    <button className="primary-button" onClick={() => setIsModalOpen(true)}>+</button>
+                </div>
             </ul>
             
-            <button className="primary-button" onClick={() => setIsModalOpen(true)}>+</button>
-
             {isModalOpen && (
                 <CreateDeck
                     onSubmit={onAddDeck}

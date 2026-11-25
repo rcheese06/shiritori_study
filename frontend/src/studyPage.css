@@ -9,6 +9,7 @@
     grid-template-columns: auto auto;
     gap: 1rem;
     padding: 1rem;
+    margin-top: 0;
 }
 
 /* deck cards */
@@ -19,6 +20,15 @@
     padding: 20px;
     background-color: #00000010;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.add-deck-button-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    padding: 20px;
+    background-color: transparent;
 }
 
 .deck-info {
