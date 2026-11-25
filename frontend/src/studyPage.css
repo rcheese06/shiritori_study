@@ -1,8 +1,12 @@
+.quiz-page {
+    width: 100%;
+}
+
 /* list of decks */
 .deck-list {
     list-style-type: none;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: auto auto;
     gap: 1rem;
     padding: 1rem;
 }
@@ -37,14 +41,26 @@
 }
 
 /* create deck page */
+.modal-bg {
+    background-color: #00000050;
+    position: fixed;
+    inset: 0; 
+    z-index: 1000;
+}
+
 .create-deck-modal {
-    position: relative;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
-    background-color: #00000010;
+    justify-content: center;
+    background-color: #e7d9bb;
     padding: 20px 50px;
     border-radius: 30px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
 }
 
 .type-toggler {
@@ -71,10 +87,15 @@
     text-align: center;
 }
 
+.type-toggler button.active {
+    background-color: #00000010;
+}
+
 /* add terms page */
 .edit-page {
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .edit-header {
@@ -82,11 +103,25 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.edit-deck-info {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    text-align: left;
+}
+.edit-deck-info h3{
+    margin: 0px;
 }
 
 .edit-contents {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
 }
 
 .edit-added-terms {

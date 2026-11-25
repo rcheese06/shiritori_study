@@ -17,11 +17,13 @@ const errorMessages = {
 };
 
 export default function DictSearch({fixedWordType, renderAction}) {
+    console.log(!fixedWordType);
     //selected type is a kind of word type
     const [selectedType, setSelectedType] = useState('vocab');
     const [query, setQuery] = useState('');
     //fixed word type is for when this component is used in the edit deck page
     //non-fixed is for the actual dictionary
+    //const hasFixedWordType = fixedWordType !== undefined && fixedWordType !== null;
     const wordType = fixedWordType ?? selectedType;
 
     const vocabSearch = useDictionarySearch('/api/dictionary/search');

@@ -11,8 +11,8 @@ export default function QuizDecks() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
 
-    async function onAddDeck(name) {
-        const deck = await addDeck(name);
+    async function onAddDeck(name, type) {
+        const deck = await addDeck(name, type);
         setIsModalOpen(false);
         navigate(`/study/${deck.id}/add-terms`);
     }

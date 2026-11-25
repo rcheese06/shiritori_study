@@ -81,6 +81,7 @@ def get_deck(deck_id: int):
     return {
         "id": deck_id,
         "name": deck["name"],
+        "type": deck["type"],
         "settings": load_question_settings(deck["question_settings"]),
         "session_size": deck["session_size"],
         "terms": [{"id": t["id"], "deck_id": t["deck_id"], "word": t["word"]} for t in terms],

@@ -5,7 +5,7 @@ import DictSearch from "./dictSearchArea.jsx"
 import './studyPage.css';
 import './dictPage.css';
 
-export default function EditDeck({wordType}) {
+export default function EditDeck() {
     const {deck, loading, error } = useCurrentDeck();
     const { addTerm, removeTerm } = useDecks();
     const navigate = useNavigate();
@@ -23,10 +23,12 @@ export default function EditDeck({wordType}) {
     return (
         <div className="edit-page">
             {/* top half of page */}
-            <button className="back-button" onClick={onBack}>Back</button>
+            <button className="icon-button" onClick={onBack}><i class="bi bi-arrow-left"></i></button>
             <div className="edit-header">
-                <h3>Deck Name: {deck.name}</h3>
-                <p>{/*size*/} terms added</p>
+                <div className="edit-deck-info">
+                    <h3>Deck Name: {deck.name}</h3>
+                    <p>{/*size*/} terms added</p>
+                </div>
                 <div className="button-pair">
                     <button className="primary-button" type="submit">Save Changes</button>
                     <button className="secondary-button" type="reset">Discard Changes</button>
@@ -37,7 +39,7 @@ export default function EditDeck({wordType}) {
             <div className="edit-contents">
                 {/* add new terms */}
                 <DictSearch 
-                    fixedWordType={wordType}
+                    fixedWordType={deck.type}
                     renderAction={({ kind, entryId }) => (
                         <button onClick={() => addTerm(deck.id, kind, entryId)}>Add</button>
                     )}
