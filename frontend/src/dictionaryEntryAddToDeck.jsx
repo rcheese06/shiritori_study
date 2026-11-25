@@ -6,7 +6,6 @@ export default function AddToDeck({ word, modal }) {
     console.log(modal);
     const { decks, loading, error, addWord } = useDecks();
     const {deck} = useCurrentDeck();
-    console.log(deck.id);
     const [isModalOpen, setIsModalOpen] = useState(modal);
     const [selectedDeckIds, setSelectedDeckIds] = useState([]);
     const [isSaving, setIsSaving] = useState(false);
