@@ -10,7 +10,7 @@ export default function DictionarySearchArea({ wordType, query, setQuery, isSear
                     placeholder={`Search for ${wordType}...`}
                 />
                 <button className="icon-button cancel-button" type="button" onClick={() => setQuery("") }>
-                    <i class="bi bi-x-lg"></i>
+                    <i className="bi bi-x-lg"></i>
                 </button>
             </div>
             <button type="submit" className="primary-button" disabled={isSearching}>

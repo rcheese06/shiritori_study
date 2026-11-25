@@ -29,7 +29,7 @@ export default function CreateDeck({onSubmit, onClose}) {
         <div className="modal-bg">
         <div className="create-deck-modal">
             <form onSubmit={handleSubmit}>
-                <button className="icon-button" type="button" onClick={onClose}><i class="bi bi-x-lg"></i></button>
+                <button className="icon-button" type="button" onClick={onClose}><i className="bi bi-x-lg"></i></button>
                 <h5>Deck Name</h5>
                 <input
                     className="search-bar"

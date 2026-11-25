@@ -23,7 +23,7 @@ export default function EditDeck() {
     return (
         <div className="edit-page">
             {/* top half of page */}
-            <button className="icon-button" onClick={onBack}><i class="bi bi-arrow-left"></i></button>
+            <button className="icon-button" onClick={onBack}><i className="bi bi-arrow-left"></i></button>
             <div className="edit-header">
                 <div className="edit-deck-info">
                     <h3>Deck Name: {deck.name}</h3>
@@ -38,12 +38,7 @@ export default function EditDeck() {
             {/* buttom half of page */}
             <div className="edit-contents">
                 {/* add new terms */}
-                <DictSearch 
-                    fixedWordType={deck.type}
-                    renderAction={({ kind, entryId }) => (
-                        <button onClick={() => addTerm(deck.id, kind, entryId)}>Add</button>
-                    )}
-                />
+                <DictSearch fixedWordType={deck.type}/>
                
                 {/* list of existing terms */}
                 <div className="edit-added-terms">

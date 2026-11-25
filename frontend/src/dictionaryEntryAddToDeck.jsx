@@ -1,11 +1,13 @@
-
-
 import { useState } from 'react';
-import { useDecks } from './hooks/useDecks.js';
+import { useCurrentDeck, useDecks } from './hooks/useDecks.js';
+import './dictPage.css';
 
-export default function AddToDeck({ word }) {
+export default function AddToDeck({ word, modal }) {
+    console.log(modal);
     const { decks, loading, error, addWord } = useDecks();
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const {deck} = useCurrentDeck();
+    console.log(deck.id);
+    const [isModalOpen, setIsModalOpen] = useState(modal);
     const [selectedDeckIds, setSelectedDeckIds] = useState([]);
     const [isSaving, setIsSaving] = useState(false);
     const [saveError, setSaveError] = useState('');
@@ -45,19 +47,41 @@ export default function AddToDeck({ word }) {
         setIsSaving(false);
     }
 
+    async function addWordToDeck() {
+        await addWord(deck.id, word);
+        console.log(`added ${word} to deck ${deck.id}`);
+    }
+
     return (
         <div className="add-to-deck">
-            <button
-                type="button"
-                className="add-words-button primary-button"
-                onClick={() => {
-                    setSaveError('');
-                    setIsModalOpen(true);
-                }}
-            >
-                +
-            </button>
-            
+            {/* modal does not exist (add terms to deck page) */}
+            {isModalOpen == undefined && (
+                <button
+                    type="button"
+                    className="add-words-button primary-button"
+                    disabled={!deck}
+                    onClick={() => {
+                        setSaveError('');
+                        addWordToDeck();
+                    }}
+                >
+                    +
+                </button>
+            )}
+
+            {/* modal exists (dict page) */}
+            {isModalOpen == false && (
+                <button
+                    type="button"
+                    className="add-words-button primary-button"
+                    onClick={() => {
+                        setSaveError('');
+                        setIsModalOpen(true);
+                    }}
+                >
+                    +
+                </button>
+            )}
             {isModalOpen && (
             <div>
                 <div className="modal-bg" onClick={() => setIsModalOpen(false)}></div>
@@ -71,7 +95,7 @@ export default function AddToDeck({ word }) {
                                 disabled={isSaving}
                                 className="icon-button cancel-button"
                             >
-                                ✕
+                                <i className="bi bi-x-lg"></i>
                             </button>
                         </div>
                         {loading ? (
@@ -86,6 +110,7 @@ export default function AddToDeck({ word }) {
                                                 <input
                                                     type="checkbox"
                                                     checked={selectedDeckIds.includes(deck.id)}
+                     
                                                     onChange={() => toggleDeck(deck.id)}
                                                     disabled={isSaving}
                                                 />
@@ -96,8 +121,8 @@ export default function AddToDeck({ word }) {
                                 </ul>
                             </>
                         )}
-                        {error && <p role="alert">{error.message}</p>}
-                        {saveError && <p role="alert">{saveError}</p>}
+                        {error && <p role="alert">Couldn't load your decks.</p>} {/* deck error */}
+                        {saveError && <p role="alert">{saveError}</p>} {/* saving error */}
                         <button
                             type="submit"
                             className="primary-button"

@@ -1,7 +1,7 @@
-import AddToDeck from './dictionaryAddToDeck.jsx';
+import AddToDeck from './dictionaryEntryAddToDeck.jsx';
 import './dictPage.css';
 
-export default function KanjiEntry({ kanji, on = [], kun = [], stroke, meanings = [] }) {
+export default function KanjiEntry({ kanji, on = [], kun = [], stroke, meanings = [], showModal }) {
     return (
         <div className="dict-entry">
             <div className="dict-heading">
@@ -13,7 +13,7 @@ export default function KanjiEntry({ kanji, on = [], kun = [], stroke, meanings 
                         <p className="dict-reading">Strokes: {stroke}</p>
                     </div>
                 </div>
-                <AddToDeck word={kanji} />
+                <AddToDeck word={kanji} modal={showModal ? false : undefined} />
             </div>
             
             

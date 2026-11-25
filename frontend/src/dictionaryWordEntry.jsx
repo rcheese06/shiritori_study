@@ -1,7 +1,7 @@
-import AddToDeck from './dictionaryAddToDeck.jsx';
+import AddToDeck from './dictionaryEntryAddToDeck.jsx';
 import './dictPage.css';
 
-export default function WordEntry({ word, reading, senses = [] }) {
+export default function WordEntry({ word, reading, senses = [], showModal }) {
     return (
         <div className="dict-entry">
             <div className="dict-heading">
@@ -9,7 +9,7 @@ export default function WordEntry({ word, reading, senses = [] }) {
                     <h4 className="dict-word">{word}</h4>
                     <p className="dict-reading">{reading?.length ? reading: 'None'}</p>
                 </div>
-                <AddToDeck word={word} />
+                <AddToDeck word={word} modal={showModal ? false : undefined} />
             </div>
             
             <ol className="dict-sense">

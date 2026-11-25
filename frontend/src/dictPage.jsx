@@ -8,14 +8,7 @@ export default function DictPage() {
                 <h1>Dictionary</h1>
             </header>        
             {/* search bar and search results */}
-            <DictSearch
-                renderAction={({ entry, kind, entryId }) => (
-                    //to-do: setModal
-                    <button onClick={() => setModal({ entry, kind, entryId })}>
-                    Add to deck
-                    </button>
-                )}
-            />
+            <DictSearch showModal={true}/>
             {/* add word to deck modal */}
             {/*modalEntry && <AddToDecksModal
             

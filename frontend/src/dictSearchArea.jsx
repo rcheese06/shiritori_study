@@ -16,7 +16,7 @@ const errorMessages = {
     },
 };
 
-export default function DictSearch({fixedWordType, renderAction}) {
+export default function DictSearch({fixedWordType, showModal}) {
     console.log(!fixedWordType);
     //selected type is a kind of word type
     const [selectedType, setSelectedType] = useState('vocab');
@@ -79,7 +79,7 @@ export default function DictSearch({fixedWordType, renderAction}) {
             <div className="dict-results">
             {/*show multiple entries*/}
             {results.map((entry, index) => {
-                const kind = wordType === 'vocab' ? 'word' : 'kanji';
+                //const kind = wordType === 'vocab' ? 'word' : 'kanji';
                 const entryId = entry.sequence_id ?? entry.literal;
                 console.log(entryId);
 
@@ -91,6 +91,7 @@ export default function DictSearch({fixedWordType, renderAction}) {
                             word={entry.expression}
                             reading={entry.reading}
                             senses={entry.senses}
+                            showModal={showModal}
                         />
                         ) : (
                         <KanjiEntry
@@ -100,9 +101,9 @@ export default function DictSearch({fixedWordType, renderAction}) {
                             kun={entry.kun}
                             stroke={entry.stroke}
                             meanings={entry.meanings}
+                            showModal={showModal}
                         />
                     )}
-                    {renderAction && renderAction({ entry, kind, entryId })}
                     </div>
                 );
             })}
