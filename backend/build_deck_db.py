@@ -17,11 +17,11 @@ def build_deck_db():
         );
 
         CREATE TABLE IF NOT EXISTS deck_words (
-            id TEXT NOT NULL, --seq id for word, kanji for kanji
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             deck_id INTEGER,
             word TEXT NOT NULL,
             FOREIGN KEY (deck_id) REFERENCES decks (id) ON DELETE CASCADE,
-            UNIQUE (id, deck_id)
+            UNIQUE (deck_id, word)
         );
     """)
 

@@ -10,11 +10,12 @@ export default function EditDeck() {
     const { addTerm, removeTerm } = useDecks();
     const navigate = useNavigate();
 
-    const terms = deck?.terms ?? [];
-
     if (loading) return <p>Loading…</p>;
     if (error) return <p>Couldn't load your deck.</p>;
     if (!deck) return <p>Deck not found.</p>;
+
+    const terms = deck.terms;
+    console.log(terms);
 
     function onBack() {
         navigate(`/study`);

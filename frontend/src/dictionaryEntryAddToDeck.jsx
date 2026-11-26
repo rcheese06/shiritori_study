@@ -67,8 +67,9 @@ export default function AddToDeck({ word, type, modal }) {
                     disabled={!deck || isAdded}
                     onClick={async () => {
                         setSaveError('');
-                        await addWordToDeck();
-                        setIsAdded(true);
+                        console.log(word);
+                        const ok = await addWordToDeck();
+                        if (ok) setIsAdded(true);
                     }}
                 >
                     {isAdded ? '✓' : '+'}

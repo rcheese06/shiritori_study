@@ -151,11 +151,10 @@ def add_word(deck_id: int, item: WordInput):
                     "INSERT INTO deck_words (deck_id, word) VALUES (?, ?)",
                     (deck_id, item.word),
                 )
-        except sqlite3.IntegrityError:
-            raise HTTPException(
-                status_code=409,
-                detail="That word is already in this deck",
-            )
+        except sqlite3.IntegrityError as e:
+            if "UNIQUE" in str(e):
+                raise HTTPException(status_code=409, detail="This word is already in this deck")
+            raise HTTPException(status_code=400, detail=f"Could not add word: {e}")
 
     return {"deck_id": deck_id, "word": item.word}
 
