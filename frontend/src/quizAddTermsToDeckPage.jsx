@@ -7,7 +7,7 @@ import './dictPage.css';
 
 export default function EditDeck() {
     const {deck, loading, error } = useCurrentDeck();
-    const { addTerm, removeTerm } = useDecks();
+    const { deleteWord } = useDecks();
     const navigate = useNavigate();
 
     if (loading) return <p>Loading…</p>;
@@ -15,7 +15,17 @@ export default function EditDeck() {
     if (!deck) return <p>Deck not found.</p>;
 
     const terms = deck.terms;
-    console.log(terms);
+
+    async function deleteWordFromDeck(word) {
+        try{
+            await deleteWord(deck.id, word);
+            console.log(`deleted ${word} from deck ${deck.id}`);
+            //remove frontend entry
+            return true;
+        } catch (err) {
+            return false;
+        }
+    }
 
     function onBack() {
         navigate(`/study`);
@@ -28,7 +38,7 @@ export default function EditDeck() {
             <div className="edit-header">
                 <div className="edit-deck-info">
                     <h3>Deck Name: {deck.name}</h3>
-                    <p>{/*size*/} terms added</p>
+                    <p>{deck.length} {deck.length === 1 ? 'term' : 'terms'} added</p>
                 </div>
                 <div className="button-pair">
                     <button className="primary-button" type="submit">Save Changes</button>
@@ -43,13 +53,15 @@ export default function EditDeck() {
                
                 {/* list of existing terms */}
                 <div className="edit-added-terms">
+                    <h5>Added Terms</h5>
                     {terms.length === 0 ? (
                         <p>This deck has no terms yet.</p>
                     ) : (
                         <ul>
                         {terms.map((term) => (
-                            <li key={term.id}>
-                            {term.entryId}
+                            <li key={term.id} className="term-list-items">
+                            {term.word}
+                            <i className="bi bi-trash3" onClick={async () => await deleteWordFromDeck(term.word)}></i>
                             </li>
                         ))}
                         </ul>
