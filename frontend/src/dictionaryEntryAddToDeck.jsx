@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { useCurrentDeck, useDecks } from './hooks/useDecks.js';
 import './dictPage.css';
 
-export default function AddToDeck({ word, modal }) {
-    console.log(modal);
+export default function AddToDeck({ word, type, modal }) {
     const { decks, loading, error, addWord } = useDecks();
     const {deck} = useCurrentDeck();
     const [isModalOpen, setIsModalOpen] = useState(modal);
     const [selectedDeckIds, setSelectedDeckIds] = useState([]);
     const [isSaving, setIsSaving] = useState(false);
     const [saveError, setSaveError] = useState('');
+    const [isAdded, setIsAdded] = useState(false);
 
     function toggleDeck(deckId) {
         setSelectedDeckIds((current) => (
@@ -47,8 +47,14 @@ export default function AddToDeck({ word, modal }) {
     }
 
     async function addWordToDeck() {
-        await addWord(deck.id, word);
-        console.log(`added ${word} to deck ${deck.id}`);
+        try{
+            await addWord(deck.id, word);
+            console.log(`added ${word} to deck ${deck.id}`);
+            return true;
+        } catch (err) {
+            setSaveError(err.message);
+            return false;
+        }
     }
 
     return (
@@ -58,13 +64,14 @@ export default function AddToDeck({ word, modal }) {
                 <button
                     type="button"
                     className="add-words-button primary-button"
-                    disabled={!deck}
-                    onClick={() => {
+                    disabled={!deck || isAdded}
+                    onClick={async () => {
                         setSaveError('');
-                        addWordToDeck();
+                        await addWordToDeck();
+                        setIsAdded(true);
                     }}
                 >
-                    +
+                    {isAdded ? '✓' : '+'}
                 </button>
             )}
 
@@ -103,13 +110,14 @@ export default function AddToDeck({ word, modal }) {
                             <>
                                 {decks.length === 0 && !error && <p>You have no decks yet.</p>}
                                 <ul className="list-of-decks">
-                                    {decks.map((deck) => (
+                                    {decks
+                                    .filter((deck) => deck.type == type)
+                                    .map((deck) => (
                                         <li key={deck.id}>
                                             <label>
                                                 <input
                                                     type="checkbox"
                                                     checked={selectedDeckIds.includes(deck.id)}
-                     
                                                     onChange={() => toggleDeck(deck.id)}
                                                     disabled={isSaving}
                                                 />

@@ -13,7 +13,7 @@ export default function KanjiEntry({ kanji, on = [], kun = [], stroke, meanings 
                         <p className="dict-reading">Strokes: {stroke}</p>
                     </div>
                 </div>
-                <AddToDeck word={kanji} modal={showModal ? false : undefined} />
+                <AddToDeck word={kanji} type='kanji' modal={showModal ? false : undefined} />
             </div>
             
             

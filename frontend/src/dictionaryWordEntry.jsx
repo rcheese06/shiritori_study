@@ -9,7 +9,7 @@ export default function WordEntry({ word, reading, senses = [], showModal }) {
                     <h4 className="dict-word">{word}</h4>
                     <p className="dict-reading">{reading?.length ? reading: 'None'}</p>
                 </div>
-                <AddToDeck word={word} modal={showModal ? false : undefined} />
+                <AddToDeck word={word} type='vocab' modal={showModal ? false : undefined} />
             </div>
             
             <ol className="dict-sense">

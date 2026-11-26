@@ -61,7 +61,7 @@ def create_deck(deck: DeckCreateInput):
 @router.get("/deck")
 def list_decks():
     with closing(connect_db()) as con:
-        rows = con.execute("SELECT id, name FROM decks ORDER BY id").fetchall()
+        rows = con.execute("SELECT id, name, type FROM decks ORDER BY id").fetchall()
         return [dict(row) for row in rows]
 
 @router.get("/deck/{deck_id}")
