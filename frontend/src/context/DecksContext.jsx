@@ -58,15 +58,13 @@ export function DecksProvider({children}) {
     }
 
     async function addWord(id, word) {
-        const saved = await deckAPI.addWord(id, word);
-        updateDeck(saved);
-        return saved
+        await deckAPI.addWord(id, word);
+        return getDeck(id);
     }
 
     async function deleteWord(id, word) {
-        const saved = await deckAPI.deleteWord(id, word);
-        updateDeck(saved);
-        return saved
+        await deckAPI.deleteWord(id, word);
+        return getDeck(id);
     }
 
   const value = {decks, loading, error, addDeck, editDeck, deleteDeck, getDeck, addWord, deleteWord};
